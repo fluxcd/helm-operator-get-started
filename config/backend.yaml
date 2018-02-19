@@ -13,4 +13,4 @@ spec:
     - name: image.repository
       value: stefanprodan/podinfo
     - name: image.tag
-      value: 0.0.6
+      value: 0.0.7
