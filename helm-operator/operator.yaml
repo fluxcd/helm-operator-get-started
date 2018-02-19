@@ -3,14 +3,30 @@
   kind: Deployment
   metadata:
     name: helm-operator
+    namespace: weave
+    labels:
+      app: weave-flux-helm-operator
+      name: weave-flux-helm
+      weave-cloud-component: flux
+      weave-flux-component: helm-operator
   spec:
     replicas: 1
+    revisionHistoryLimit: 2
+    selector:
+      matchLabels:
+        app: weave-flux-helm-operator
+        name: weave-flux-helm
+        weave-cloud-component: flux
+        weave-flux-component: helm-operator
     strategy:
       type: Recreate
     template:
       metadata:
         labels:
-          name: helm-operator
+          app: weave-flux-helm-operator
+          name: weave-flux-helm
+          weave-cloud-component: flux
+          weave-flux-component: helm-operator
       spec:
         serviceAccount: flux
         volumes:
