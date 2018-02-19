@@ -1,0 +1,47 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ template "redis.fullname" . }}-server-{{ randAlphaNum 5 | lower }}
+  labels:
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app: {{ template "redis.name" . }}
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: redis-cli
+      image: "{{ .Values.image }}"
+      command: ["/bin/bash", "/scripts/ping.sh"]
+      env:
+      - name: REDIS_SVC
+        value: {{ template "redis.fullname" . }}
+      volumeMounts:
+      - name: scripts
+        mountPath: /scripts
+  restartPolicy: Never
+  volumes:
+  - name: scripts
+    configMap:
+      name: {{ template "redis.fullname" . }}-ping-cfg
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "redis.fullname" . }}-ping-cfg
+  labels:
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    app: {{ template "redis.name" . }}
+data:
+  ping.sh: |
+    #!/bin/bash
+    set -eo pipefail
+
+    if ping="$(timeout 3 redis-cli -h "$REDIS_SVC" ping)" && [ "$ping" = 'PONG' ]; then
+        exit 0
+    fi
+
+    exit 1
