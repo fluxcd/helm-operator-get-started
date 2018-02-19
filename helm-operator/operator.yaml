@@ -11,7 +11,6 @@
       weave-flux-component: helm-operator
   spec:
     replicas: 1
-    revisionHistoryLimit: 2
     selector:
       matchLabels:
         app: weave-flux-helm-operator
