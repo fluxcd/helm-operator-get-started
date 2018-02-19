@@ -1,0 +1,30 @@
+---
+  apiVersion: extensions/v1beta1
+  kind: Deployment
+  metadata:
+    name: helm-operator
+  spec:
+    replicas: 1
+    strategy:
+      type: Recreate
+    template:
+      metadata:
+        labels:
+          name: helm-operator
+      spec:
+        serviceAccount: flux
+        volumes:
+        - name: git-key
+          secret:
+            secretName: flux-git-deploy
+        containers:
+        - name: helm-operator
+          image: quay.io/weaveworks/helm-operator:alpha
+          imagePullPolicy: IfNotPresent
+          volumeMounts:
+          - name: git-key
+            mountPath: /etc/fluxd/ssh
+          args:
+          - --git-url=git@github.com:stefanprodan/helm-flux-demo
+          - --git-branch=master
+          - --git-charts-path=charts
