@@ -13,4 +13,4 @@ spec:
     - name: image
       value: bitnami/redis:4.0.6-r1
     - name: maxmemory
-      value: 128mb
+      value: 256mb
