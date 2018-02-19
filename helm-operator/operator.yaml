@@ -2,32 +2,23 @@
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: helm-operator
+  name: weave-flux-helm-operator
   namespace: weave
   labels:
     app: weave-flux-helm-operator
-    name: weave-flux-helm
-    weave-cloud-component: flux
-    weave-flux-component: helm-operator
 spec:
   replicas: 1
   selector:
     matchLabels:
       app: weave-flux-helm-operator
-      name: weave-flux-helm
-      weave-cloud-component: flux
-      weave-flux-component: helm-operator
   strategy:
     type: Recreate
   template:
     metadata:
       labels:
         app: weave-flux-helm-operator
-        name: weave-flux-helm
-        weave-cloud-component: flux
-        weave-flux-component: helm-operator
     spec:
-      serviceAccount: flux
+      serviceAccount: weave-agent
       volumes:
       - name: git-key
         secret:
