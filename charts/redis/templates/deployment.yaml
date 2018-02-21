@@ -98,7 +98,7 @@ spec:
           containerPort: 9121
         resources:
           limits:
-            memory: 128Mi
+            memory: 64Mi
             cpu: 100m
           requests:
             memory: 16Mi
