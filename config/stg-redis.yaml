@@ -4,6 +4,8 @@ kind: FluxHelmRelease
 metadata:
   name: stg-redis
   namespace: default
+  labels:
+    chart: redis
 spec:
   chartGitPath: redis
   releaseName: stg-redis
