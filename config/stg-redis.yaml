@@ -1,0 +1,14 @@
+---
+apiVersion: helm.integrations.flux.weave.works/v1alpha
+kind: FluxHelmRelease
+metadata:
+  name: stg-redis
+  namespace: default
+spec:
+  chartGitPath: redis
+  releaseName: stg-redis
+  values:
+    - name: image
+      value: bitnami/redis:4.0.8-r0
+    - name: maxmemory
+      value: 256mb
