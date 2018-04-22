@@ -8,6 +8,7 @@ metadata:
     chart: podinfo
 spec:
   chartGitPath: podinfo
+  releaseName: frontend
   values:
     replicaCount: 2
     backend: http://backend-podinfo:9898/echo
