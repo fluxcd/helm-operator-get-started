@@ -9,7 +9,10 @@ metadata:
 spec:
   chartGitPath: podinfo
   values:
-    - name: image.repository
-      value: stefanprodan/podinfo
-    - name: image.tag
-      value: 0.0.6
+    replicaCount: 2
+    backend: http://backend-podinfo:9898/echo
+    image:
+      tag: 0.2.2
+    service:
+      type: NodePort
+      nodePort: 31198

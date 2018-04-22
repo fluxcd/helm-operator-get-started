@@ -10,7 +10,6 @@ spec:
   chartGitPath: podinfo
   releaseName: backend
   values:
-    - name: image.repository
-      value: stefanprodan/podinfo
-    - name: image.tag
-      value: 0.0.7
+    replicaCount: 2
+    image:
+      tag: 0.2.2
