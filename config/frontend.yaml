@@ -10,7 +10,7 @@ spec:
   chartGitPath: podinfo
   releaseName: frontend
   values:
-    replicaCount: 2
+    replicaCount: 1
     backend: http://backend-podinfo:9898/echo
     image:
       tag: 0.2.2
