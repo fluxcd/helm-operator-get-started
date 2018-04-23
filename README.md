@@ -1,9 +1,11 @@
 # GitOps with Helm and Weave Flux
 
+Automate Helm releases with Weave Flux. 
+
 Prerequisites:
  - fork this repository 
  - install Helm and Tiller
- - install Weave Flux and Flux Helm Operator 
+ - install Weave Flux
 
 ### Install Helm
 
@@ -23,7 +25,7 @@ kubectl create clusterrolebinding tiller-cluster-rule \
     --serviceaccount=kube-system:tiller 
 ```
 
-Deploy Tiller in kube-system namespace:
+Deploy Tiller in `kube-system` namespace:
 
 ```bash
 helm init --skip-refresh --upgrade --service-account tiller
@@ -37,13 +39,14 @@ Add Weave Flux chart repo:
 helm repo add sp https://stefanprodan.github.io/k8s-podinfo
 ```
 
-Install Weave Flux Helm Operator by specifying your fork URL 
+Install Weave Flux and its Helm Operator by specifying your fork URL 
 (replace `stefanprodan` with your GitHub username): 
 
 ```bash
 helm install --name cd \
---set git.url=git@github.com:stefanprodan/weave-flux-helm-demo \
 --set helmOperator.create=true \
+--set git.url=git@github.com:stefanprodan/weave-flux-helm-demo \
+--set git.chartsPath=charts \
 --namespace flux \
 sp/weave-flux
 ```
@@ -64,14 +67,15 @@ create a **deploy key** with **write access** on your GitHub repository.
 Open GitHub, navigate to your fork, go to _Setting > Deploy keys_ click on _Add deploy key_, check 
 _Allow write access_, paste the Flux public key and click _Add key_.
 
-After a couple of seconds Flux will create a Helm release for each file inside the `config` dir.
+After a couple of seconds Flux will create the `test` namespace and will install a Helm release 
+for each resource inside the `releases` dir.
 
 ```bash
-helm list
-NAME    	REVISION	UPDATED                 	STATUS  	CHART           	NAMESPACE
-backend 	2       	Tue Apr 24 00:06:58 2018	DEPLOYED	podinfo-0.1.0   	default  
-cache   	2       	Tue Apr 24 00:06:58 2018	DEPLOYED	redis-1.0.0     	default  
-cd      	1       	Tue Apr 24 00:03:43 2018	DEPLOYED	weave-flux-0.1.0	flux     
-frontend	2       	Tue Apr 24 00:06:59 2018	DEPLOYED	podinfo-0.1.0   	default 
+helm list --namespace test
+NAME    	REVISION	UPDATED                 	STATUS  	CHART          	NAMESPACE
+backend 	1       	Tue Apr 24 01:28:22 2018	DEPLOYED	podinfo-0.1.0  	test     
+cache   	1       	Tue Apr 24 01:28:23 2018	DEPLOYED	memcached-2.0.1	test     
+database	1       	Tue Apr 24 01:28:21 2018	DEPLOYED	mongodb-0.4.27 	test     
+frontend	1       	Tue Apr 24 01:28:22 2018	DEPLOYED	podinfo-0.1.0  	test     
 ```
 
