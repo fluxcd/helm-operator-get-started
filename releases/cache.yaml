@@ -3,7 +3,7 @@ apiVersion: helm.integrations.flux.weave.works/v1alpha
 kind: FluxHelmRelease
 metadata:
   name: cache
-  namespace: default
+  namespace: test
   labels:
     chart: redis
 spec:
