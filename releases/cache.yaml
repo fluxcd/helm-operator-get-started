@@ -5,11 +5,16 @@ metadata:
   name: cache
   namespace: test
   labels:
-    chart: redis
+    chart: memcached
 spec:
-  chartGitPath: redis
+  chartGitPath: memcached
   releaseName: cache
   values:
-    image: bitnami/redis:4.0.9
-    maxmemory: 128mb
-    eviction: allkeys-lru
+    image: memcached:1.4.36-alpine
+    replicaCount: 1
+    pdbMinAvailable: 1
+    AntiAffinity: "soft"
+    memcached:
+      maxItemMemory: 64
+      verbosity: v
+      extendedOptions: modern

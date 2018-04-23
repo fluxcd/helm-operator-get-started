@@ -1,7 +1,0 @@
-name: redis
-version: 1.0.0
-appVersion: 4.0.8
-home: https://github.com/adore-me/kube
-sources:
-- https://github.com/bitnami/bitnami-docker-redis
-engine: gotpl
