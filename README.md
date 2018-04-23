@@ -66,3 +66,12 @@ _Allow write access_, paste the Flux public key and click _Add key_.
 
 After a couple of seconds Flux will create a Helm release for each file inside the `config` dir.
 
+```bash
+helm list
+NAME    	REVISION	UPDATED                 	STATUS  	CHART           	NAMESPACE
+backend 	2       	Tue Apr 24 00:06:58 2018	DEPLOYED	podinfo-0.1.0   	default  
+cache   	2       	Tue Apr 24 00:06:58 2018	DEPLOYED	redis-1.0.0     	default  
+cd      	1       	Tue Apr 24 00:03:43 2018	DEPLOYED	weave-flux-0.1.0	flux     
+frontend	2       	Tue Apr 24 00:06:59 2018	DEPLOYED	podinfo-0.1.0   	default 
+```
+
