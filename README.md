@@ -51,6 +51,18 @@ helm install --name cd \
 sp/weave-flux
 ```
 
+You can connect Weave Flux to Weave Cloud using your service token:
+
+```bash
+helm install --name cd \
+--set token=YOUR_WEAVE_CLOUD_SERVICE_TOKEN \
+--set helmOperator.create=true \
+--set git.url=git@github.com:stefanprodan/weave-flux-helm-demo \
+--set git.chartsPath=charts \
+--namespace flux \
+sp/weave-flux
+```
+
 ### Setup Git sync
 
 At startup Flux generates a SSH key and logs the public key. 
