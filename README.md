@@ -2,6 +2,8 @@
 
 Automate Helm releases with Weave Flux. 
 
+![gitops](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/diagrams/flux-helm.png)
+
 Prerequisites:
  - fork this repository 
  - install Helm and Tiller
