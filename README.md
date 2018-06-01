@@ -35,35 +35,37 @@ helm init --skip-refresh --upgrade --service-account tiller
 
 ### Install Weave Flux 
 
-Add Weave Flux chart repo:
+Add the Weave Flux chart repo:
 
 ```bash
-helm repo add sp https://stefanprodan.github.io/k8s-podinfo
+helm repo add weaveworks https://weaveworks.github.io/flux
 ```
 
 Install Weave Flux and its Helm Operator by specifying your fork URL 
 (replace `stefanprodan` with your GitHub username): 
 
 ```bash
-helm install --name cd \
+helm install --name flux \
 --set helmOperator.create=true \
---set git.url=git@github.com:stefanprodan/weave-flux-helm-demo \
+--set git.url=git@github.com:stefanprodan/openfaas-flux \
 --set git.chartsPath=charts \
 --namespace flux \
-sp/weave-flux
+weaveworks/flux
 ```
 
-You can connect Weave Flux to Weave Cloud using your service token:
+You can connect Weave Flux to Weave Cloud using a service token:
 
 ```bash
-helm install --name cd \
+helm install --name flux \
 --set token=YOUR_WEAVE_CLOUD_SERVICE_TOKEN \
 --set helmOperator.create=true \
 --set git.url=git@github.com:stefanprodan/weave-flux-helm-demo \
 --set git.chartsPath=charts \
 --namespace flux \
-sp/weave-flux
+weaveworks/flux
 ```
+
+Note that Flux Helm Operator works with Kubernetes 1.9 or newer.
 
 ### Setup Git sync
 
@@ -71,8 +73,7 @@ At startup Flux generates a SSH key and logs the public key.
 Find the SSH public key with:
 
 ```bash
-export FLUX_POD=$(kubectl get pods --namespace flux -l "app=weave-flux,release=cd" -o jsonpath="{.items[0].metadata.name}")
-kubectl -n flux logs $FLUX_POD | grep identity.pub | cut -d '"' -f2 | sed 's/.\{2\}$//'
+kubectl -n flux logs deployment/flux | grep identity.pub 
 ```
 
 In order to sync your cluster state with git you need to copy the public key and 
