@@ -13,9 +13,16 @@ Prerequisites:
 
 Install Helm CLI:
 
+On MacOS:
+
 ```bash
 brew install kubernetes-helm
 ```
+
+On Linux:
+
+- Download the [latest release](https://github.com/kubernetes/helm/releases/latest)
+- unpack the tarball and put the binary in your `$PATH`
 
 Create a service account and a cluster role binding for Tiller:
 
@@ -73,7 +80,7 @@ At startup Flux generates a SSH key and logs the public key.
 Find the SSH public key with:
 
 ```bash
-kubectl -n flux logs deployment/flux | grep identity.pub 
+kubectl -n flux logs deployment/flux | grep identity.pub | cut -d '"' -f2 | sed 's/.\{2\}$//'
 ```
 
 In order to sync your cluster state with git you need to copy the public key and 
@@ -94,3 +101,14 @@ database	1       	Tue Apr 24 01:28:21 2018	DEPLOYED	mongodb-0.4.27 	test
 frontend	1       	Tue Apr 24 01:28:22 2018	DEPLOYED	podinfo-0.1.0  	test     
 ```
 
+## <a name="help"></a>Getting Help
+
+If you have any questions about this Weave Flux Helm Demo:
+
+- Invite yourself to the <a href="https://weaveworks.github.io/community-slack/" target="_blank">Weave community</a> slack.
+- Ask a question on the [#flux](https://weave-community.slack.com/messages/flux/) slack channel.
+- Join the <a href="https://www.meetup.com/pro/Weave/"> Weave User Group </a> and get invited to online talks, hands-on training and meetups in your area.
+- Send an email to <a href="mailto:weave-users@weave.works">weave-users@weave.works</a>
+- <a href="https://github.com/stefanprodan/weave-flux-helm-demo/issues/new">File an issue.</a>
+
+Your feedback is always welcome!
