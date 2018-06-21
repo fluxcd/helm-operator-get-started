@@ -54,7 +54,7 @@ Install Weave Flux and its Helm Operator by specifying your fork URL
 ```bash
 helm install --name flux \
 --set helmOperator.create=true \
---set git.url=git@github.com:stefanprodan/openfaas-flux \
+--set git.url=git@github.com:stefanprodan/weave-flux-helm-demo \
 --set git.chartsPath=charts \
 --namespace flux \
 weaveworks/flux
