@@ -105,6 +105,7 @@ frontend	1       	Tue Apr 24 01:28:22 2018	DEPLOYED	podinfo-0.1.0  	test
 
 If you have any questions about this Weave Flux Helm Demo:
 
+- Checkout the weaveworks [helm integration guide](https://github.com/weaveworks/flux/blob/master/site/helm/helm-integration.md)
 - Invite yourself to the <a href="https://weaveworks.github.io/community-slack/" target="_blank">Weave community</a> slack.
 - Ask a question on the [#flux](https://weave-community.slack.com/messages/flux/) slack channel.
 - Join the <a href="https://www.meetup.com/pro/Weave/"> Weave User Group </a> and get invited to online talks, hands-on training and meetups in your area.
