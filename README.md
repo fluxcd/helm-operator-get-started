@@ -1,6 +1,20 @@
-# GitOps with Helm and Weave Flux
+# Managing Helm releases the GitOps way
 
-Automate Helm releases with Weave Flux. 
+**What is GitOps?**
+
+GitOps is a way to do Continuous Delivery, it works by using Git as a source of truth for declarative infrastructure and workloads. For Kubernetes this means using `git push` instead of `kubectl create/apply` or `helm install/upgrade`.
+
+In a traditional CICD pipeline, CD is an implementation extension powered by the continuous integration tooling to promote build artifacts to production. In the GitOps pipeline model, any change to production must be committed in source control (preferable via a pull request) prior to being applied on the cluster. This way rollback and audit logs are provided by Git. If the entire production state is under version control and described in a single Git repository, when disaster strikes, the whole infrastructure can be quickly restored from that repository.
+
+To better understand the benefits of this approach to CD and what are the differences between GitOps and Infrastructure-as-Code tools, head to Weaveworks website and read [GitOps - What you need to know](https://www.weave.works/technologies/gitops/) article.
+
+In order to apply the GitOps pipeline model to Kubernetes you need three things: 
+
+* a Git repository with your workloads definitions in YAML format, Helm charts and any other Kubernetes custom resource that defines your cluster desired state (I will refer to this as the *config* repository)
+* a container registry where your CI system pushes immutable images (no *latest* tags, use *semantic versioning* or git *commit sha*)
+* an operator that runs in your cluster and does a two-way synchronization:
+    * watches the registry for new image releases and based on deployment policies updates the workload definitions with the new image tag and commits the changes to the config repository 
+    * watches for changes in the config repository and applies them to your cluster
 
 ![gitops](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/diagrams/flux-helm.png)
 
@@ -8,37 +22,6 @@ Prerequisites:
  - fork this repository 
  - install Helm and Tiller
  - install Weave Flux
-
-### Install Helm
-
-Install Helm CLI:
-
-On MacOS:
-
-```bash
-brew install kubernetes-helm
-```
-
-On Linux:
-
-- Download the [latest release](https://github.com/kubernetes/helm/releases/latest)
-- unpack the tarball and put the binary in your `$PATH`
-
-Create a service account and a cluster role binding for Tiller:
-
-```bash
-kubectl -n kube-system create sa tiller
-
-kubectl create clusterrolebinding tiller-cluster-rule \
-    --clusterrole=cluster-admin \
-    --serviceaccount=kube-system:tiller 
-```
-
-Deploy Tiller in `kube-system` namespace:
-
-```bash
-helm init --skip-refresh --upgrade --service-account tiller
-```
 
 ### Install Weave Flux 
 
@@ -53,18 +36,6 @@ Install Weave Flux and its Helm Operator by specifying your fork URL
 
 ```bash
 helm install --name flux \
---set helmOperator.create=true \
---set git.url=ssh://git@github.com/stefanprodan/weave-flux-helm-demo \
---set git.chartsPath=charts \
---namespace flux \
-weaveworks/flux
-```
-
-You can connect Weave Flux to Weave Cloud using a service token:
-
-```bash
-helm install --name flux \
---set token=YOUR_WEAVE_CLOUD_SERVICE_TOKEN \
 --set helmOperator.create=true \
 --set git.url=ssh://git@github.com/stefanprodan/weave-flux-helm-demo \
 --set git.chartsPath=charts \
@@ -89,17 +60,6 @@ create a **deploy key** with **write access** on your GitHub repository.
 Open GitHub, navigate to your fork, go to _Setting > Deploy keys_ click on _Add deploy key_, check 
 _Allow write access_, paste the Flux public key and click _Add key_.
 
-After a couple of seconds Flux will create the `test` namespace and will install a Helm release 
-for each resource inside the `releases` dir.
-
-```bash
-helm list --namespace test
-NAME    	REVISION	UPDATED                 	STATUS  	CHART          	NAMESPACE
-backend 	1       	Tue Apr 24 01:28:22 2018	DEPLOYED	podinfo-0.1.0  	test     
-cache   	1       	Tue Apr 24 01:28:23 2018	DEPLOYED	memcached-2.0.1	test     
-database	1       	Tue Apr 24 01:28:21 2018	DEPLOYED	mongodb-0.4.27 	test     
-frontend	1       	Tue Apr 24 01:28:22 2018	DEPLOYED	podinfo-0.1.0  	test     
-```
 
 ## <a name="help"></a>Getting Help
 
