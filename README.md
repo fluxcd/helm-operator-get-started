@@ -2,11 +2,19 @@
 
 **What is GitOps?**
 
-GitOps is a way to do Continuous Delivery, it works by using Git as a source of truth for declarative infrastructure and workloads. For Kubernetes this means using `git push` instead of `kubectl create/apply` or `helm install/upgrade`.
+GitOps is a way to do Continuous Delivery, it works by using Git as a source of truth for declarative infrastructure and workloads. 
+For Kubernetes this means using `git push` instead of `kubectl create/apply` or `helm install/upgrade`.
 
-In a traditional CICD pipeline, CD is an implementation extension powered by the continuous integration tooling to promote build artifacts to production. In the GitOps pipeline model, any change to production must be committed in source control (preferable via a pull request) prior to being applied on the cluster. This way rollback and audit logs are provided by Git. If the entire production state is under version control and described in a single Git repository, when disaster strikes, the whole infrastructure can be quickly restored from that repository.
+In a traditional CICD pipeline, CD is an implementation extension powered by the 
+continuous integration tooling to promote build artifacts to production. 
+In the GitOps pipeline model, any change to production must be committed in source control 
+(preferable via a pull request) prior to being applied on the cluster. 
+This way rollback and audit logs are provided by Git. 
+If the entire production state is under version control and described in a single Git repository, when disaster strikes, 
+the whole infrastructure can be quickly restored from that repository.
 
-To better understand the benefits of this approach to CD and what are the differences between GitOps and Infrastructure-as-Code tools, head to Weaveworks website and read [GitOps - What you need to know](https://www.weave.works/technologies/gitops/) article.
+To better understand the benefits of this approach to CD and what are the differences between GitOps and 
+Infrastructure-as-Code tools, head to Weaveworks website and read [GitOps - What you need to know](https://www.weave.works/technologies/gitops/) article.
 
 In order to apply the GitOps pipeline model to Kubernetes you need three things: 
 
@@ -16,7 +24,7 @@ In order to apply the GitOps pipeline model to Kubernetes you need three things:
     * watches the registry for new image releases and based on deployment policies updates the workload definitions with the new image tag and commits the changes to the config repository 
     * watches for changes in the config repository and applies them to your cluster
 
-![gitops](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/diagrams/flux-helm.png)
+![gitops](https://github.com/stefanprodan/k8s-podinfo/blob/master/docs/diagrams/flux-helm-gitops.png)
 
 Prerequisites:
  - fork this repository 
@@ -37,7 +45,7 @@ Install Weave Flux and its Helm Operator by specifying your fork URL
 ```bash
 helm install --name flux \
 --set helmOperator.create=true \
---set git.url=ssh://git@github.com/stefanprodan/weave-flux-helm-demo \
+--set git.url=ssh://git@github.com/stefanprodan/gitops-helm \
 --set git.chartsPath=charts \
 --namespace flux \
 weaveworks/flux
