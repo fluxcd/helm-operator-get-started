@@ -10,7 +10,7 @@ spec:
   chartGitPath: podinfo
   releaseName: podinfo-stg
   values:
-    image: stefanprodan/podinfo:0.4.0
+    image: stefanprodan/podinfo:stg-62zjbhak
     replicaCount: 2
     hpa:
       enabled: true
