@@ -13,7 +13,7 @@ spec:
   chartGitPath: podinfo
   releaseName: podinfo-dev
   values:
-    image: stefanprodan/podinfo:dev-kb9lm91e
+    image: stefanprodan/podinfo:dev-w7zr7phs
     replicaCount: 1
     hpa:
       enabled: false
