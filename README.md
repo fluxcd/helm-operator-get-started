@@ -101,7 +101,7 @@ I will be using [podinfo](https://github.com/stefanprodan/k8s-podinfo) to demons
 Inside the *hack* dir you can find a script that simulates the CI process. 
 The *ci-mock.sh* script does the following:
 * pulls the podinfo source code from GitHub
-* generates a random string that will server as the Git commit short SHA
+* generates a random string that will serve as the Git commit short SHA
 * builds a Docker image with the format: `yourname/podinfo:branch-sha`
 * pushes the image to Docker Hub
 
@@ -227,7 +227,7 @@ spec:
 
 The options specified in the FluxHelmRelease `spec.values` will override the ones in `values.yaml` from the chart source. 
 
-### FAQ
+### Flux Helm Integration FAQ
 
 **My Helm charts have more than one container image. How can I automate the image tag update for all my containers?**
 
