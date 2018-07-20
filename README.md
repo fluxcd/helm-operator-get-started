@@ -229,9 +229,9 @@ spec:
 
 ### FAQ
 
-**I'm using SSL between Helm and Tiller. How can I configure Flux to use the CA and client-side certificate?**
+**I'm using SSL between Helm and Tiller. How can I configure Flux to use the certificate?**
 
-You have to install the Flux Helm Operator using the `helmOperator.tls` options, more details [here](https://github.com/weaveworks/flux/blob/master/chart/flux/README.md#installing-weave-flux-helm-operator-and-helm-with-tls-enabled).  
+When installing Flux, you can supply the CA and client-side certificate using the `helmOperator.tls` options, more details [here](https://github.com/weaveworks/flux/blob/master/chart/flux/README.md#installing-weave-flux-helm-operator-and-helm-with-tls-enabled).  
 
 **I've deleted a `FluxHelmRelease` file from Git. Why is the Helm release still running on my cluster?**
 
@@ -243,6 +243,11 @@ kubectl -n dev delete fluxhelmrelease/podinfo-dev
 ```
 
 The Flux Helm operator will receive the delete event and will purge the Helm release.
+
+**I've uninstalled Flux and all my Helm releases are gone. Why is that?**
+
+On `FluxHelmRelease` CRD deletion, Kubernetes will remove all `FluxHelmRelease` CRs triggering a Helm purge for each release created by Flux.
+To avoid this you have to manually delete the Flux Helm Operator with `kubectl -n flux delete deployment/flux-helm-operator` before running `helm delete flux`.
 
 **How do I store Kubernetes secretes safely in a public Git repo?**
 
