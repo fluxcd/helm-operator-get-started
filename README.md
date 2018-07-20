@@ -144,9 +144,7 @@ spec:
   values:
     image: stefanprodan/podinfo:dev-kb9lm91e
     replicaCount: 1
-    hpa:
-      enabled: false
-``` 
+```
 
 Flux Helm release fields:
 
@@ -174,7 +172,7 @@ REVISION	UPDATED                 	STATUS    	CHART        	DESCRIPTION
 2       	Fri Jul 20 22:18:46 2018	DEPLOYED  	podinfo-0.2.0	Upgrade complete
 ```
 
-The Flux Helm Operator reacts to changes in the FluxHelmResources but can also detect changes in the charts source files.
+The Flux Helm Operator reacts to changes in the FluxHelmResources collection but can also detect changes in the charts source files.
 If I make a change to the podinfo chart, the operator will pick that up and run an upgrade. 
 
 ![gitops-chart-change](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-chart-update.png)
@@ -226,6 +224,8 @@ spec:
       cpu: 50
       memory: 128Mi
 ```
+
+The options specified in the FluxHelmRelease `spec.values` will override the ones in `values.yaml` from the chart source. 
 
 ### FAQ
 
