@@ -24,6 +24,8 @@ In order to apply the GitOps pipeline model to Kubernetes you need three things:
     * watches the registry for new image releases and based on deployment policies updates the workload definitions with the new image tag and commits the changes to the config repository 
     * watches for changes in the config repository and applies them to your cluster
 
+I will be using GitHub to host the config repo, Docker Hub as the container registry and Weave Flux OSS as GitOps Kubernetes Operator.
+
 ![gitops](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-gitops.png)
 
 ### Install Weave Flux
@@ -159,8 +161,23 @@ Flux Helm release fields:
 With the `flux.weave.works` annotations I instruct Flux to automate this release.
 When a new tag with the prefix `dev` is pushed to Docker Hub, Flux will update the image field in the yaml file, 
 will commit and push the change to Git and finally will apply the change on the cluster. 
+
+![gitops-automation](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-image-update.png)
+
 When the `podinfo-dev` FluxHelmRelease object changes inside the cluster, 
 Kubernetes API will notify the Flux Helm Operator and the operator will perform a Helm release upgrade. 
+
+```
+$ helm history podinfo-dev
+
+REVISION	UPDATED                 	STATUS    	CHART        	DESCRIPTION     
+1       	Fri Jul 20 16:51:52 2018	SUPERSEDED	podinfo-0.2.0	Install complete
+2       	Fri Jul 20 22:18:46 2018	DEPLOYED  	podinfo-0.2.0	Upgrade complete
+```
+
+The Flux Helm Operator reacts to changes in the FluxHelmResources but can also detect changes in the charts source files.
+
+If I make a change to the podinfo chart, the operator will pick that up and run an upgrade. 
 
 Now let's assume that I want to promote the code from the `dev` branch into a more stable environment for others to test it. 
 I would create a release candidate by merging the podinfo code from `dev` into the `stg` branch. 
@@ -200,7 +217,6 @@ spec:
       cpu: 50
       memory: 128Mi
 ```
-
 
 ### Getting Help
 
