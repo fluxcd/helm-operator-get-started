@@ -24,7 +24,7 @@ In order to apply the GitOps pipeline model to Kubernetes you need three things:
     * watches the registry for new image releases and based on deployment policies updates the workload definitions with the new image tag and commits the changes to the config repository 
     * watches for changes in the config repository and applies them to your cluster
 
-I will be using GitHub to host the config repo, Docker Hub as the container registry and Weave Flux OSS as GitOps Kubernetes Operator.
+I will be using GitHub to host the config repo, Docker Hub as the container registry and Weave Flux OSS as the GitOps Kubernetes Operator.
 
 ![gitops](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-gitops.png)
 
@@ -124,9 +124,9 @@ The push refers to repository [docker.io/stefanprodan/podinfo]
 36ced78d2ca2: Pushed 
 ```
 
-Inside the *charts* directory there is Helm chart for podinfo. 
-Using this chart I want to create a release with the image I've just published to Docker Hub, but instead of editing the 
-`values.yaml` from the chart source I will create a FluxHelmRelease definition: 
+Inside the *charts* directory there is a podinfo Helm chart. 
+Using this chart I want to create a release in the `dev` namespace with the image I've just published to Docker Hub.
+Instead of editing the `values.yaml` from the chart source I will create a `FluxHelmRelease` definition: 
 
 ```yaml
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
@@ -230,13 +230,12 @@ spec:
 
 ### Getting Help
 
-If you have any questions about this Weave Flux Helm Demo:
+If you have any questions about GitOps or Weave Flux:
 
-- Checkout the weaveworks [helm integration guide](https://github.com/weaveworks/flux/blob/master/site/helm/helm-integration.md)
-- Invite yourself to the <a href="https://weaveworks.github.io/community-slack/" target="_blank">Weave community</a> slack.
+- Join the [#gitops](https://kubernetes.slack.com/messages/gitops) Kubernetes slack channel.
+- Invite yourself to the [Weave community](https://weaveworks.github.io/community-slack/) slack.
 - Ask a question on the [#flux](https://weave-community.slack.com/messages/flux/) slack channel.
-- Join the <a href="https://www.meetup.com/pro/Weave/"> Weave User Group </a> and get invited to online talks, hands-on training and meetups in your area.
+- Join the [Weave User Group](https://www.meetup.com/pro/Weave/) and get invited to online talks, hands-on training and meetups in your area.
 - Send an email to <a href="mailto:weave-users@weave.works">weave-users@weave.works</a>
-- <a href="https://github.com/stefanprodan/weave-flux-helm-demo/issues/new">File an issue.</a>
 
 Your feedback is always welcome!
