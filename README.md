@@ -227,6 +227,105 @@ spec:
 
 The options specified in the FluxHelmRelease `spec.values` will override the ones in `values.yaml` from the chart source. 
 
+### Managing Kubernetes secretes
+
+In oder to store secretes safely in a public Git repo you can use Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) 
+and encrypt your Kubernetes Secrets into SealedSecrets. 
+The SealedSecret can be decrypted only by the controller running in your cluster.
+
+This is the Sealed Secrets controller release:
+
+```yaml
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: sealed-secrets
+  namespace: adm
+  labels:
+    chart: sealed-secrets
+spec:
+  chartGitPath: sealed-secrets
+  releaseName: sealed-secrets
+  values:
+    image: quay.io/bitnami/sealed-secrets-controller:v0.7.0
+```
+
+Note that this release is not automated, since this is a critical component I prefer to update it manually. 
+
+In order to encrypt secrets, install the `kubeseal` CLI:
+
+```bash
+release=$(curl --silent "https://api.github.com/repos/bitnami-labs/sealed-secrets/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
+GOOS=$(go env GOOS)
+GOARCH=$(go env GOARCH)
+wget https://github.com/bitnami/sealed-secrets/releases/download/$release/kubeseal-$GOOS-$GOARCH
+sudo install -m 755 kubeseal-$GOOS-$GOARCH /usr/local/bin/kubeseal
+```
+
+At startup, the Sealed Secrets Controller generates a RSA key and logs the public key. 
+Using `kubeseal` you can save your public key as `pub-cert.pem`, 
+the public key can be safely stored in Git, and can be used to encrypt secrets without direct access to the Kubernetes cluster:
+
+```bash
+kubeseal --fetch-cert \
+--controller-namespace=adm \
+--controller-name=sealed-secrets \
+> pub-cert.pem
+```
+
+You can generate a Kubernetes secret locally with kubectl and encrypt it with kubeseal:
+
+```bash
+kubectl -n dev create secret generic basic-auth \
+--from-literal=user=admin \
+--from-literal=password=admin \
+--dry-run \
+-o json > basic-auth.json
+
+kubeseal --format=yaml --cert=pub-cert.pem < basic-auth.json > basic-auth.yaml
+```
+
+This generates a custom resource of type `SealedSecret` that contains the encrypted credentials:
+
+```yaml
+apiVersion: bitnami.com/v1alpha1
+kind: SealedSecret
+metadata:
+  name: basic-auth
+  namespace: adm
+spec:
+  encryptedData:
+    password: AgAR5nzhX2TkJ.......
+    user: AgAQDO58WniIV3gTk.......
+``` 
+
+Delete the `basic-auth.json` file and push the `pub-cert.pem` and `basic-auth.yaml` to Git:
+
+```bash
+rm basic-auth.json
+mv basic-auth.yaml /releases/dev/
+
+git commit -a -m "Add basic auth credentials to dev namespace" && git push
+```
+
+Flux will apply the sealed secret on your cluster and Sealed Secrets Controller will then decrypt it into a 
+Kubernetes secret. 
+
+![SealedSecrets](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-secrets.png)
+
+To prepare for disaster recovery you should backup the SealedSecrets private key with:
+
+```bash
+kubectl get secret -n adm sealed-secrets-key -o yaml --export > sealed-secrets-key.yaml
+```
+
+To restore from backup after a disaster, replace the newly-created secret and restart the sealed-secrets controller:
+
+```bash
+kubectl replace secret -n flux sealed-secrets-key -f sealed-secrets-key.yaml
+kubectl delete pod -n adm -l app=sealed-secrets
+```
+
 ### Flux Helm Integration FAQ
 
 **My Helm charts have more than one container image. How can I automate the image tag update for all my containers?**
@@ -292,25 +391,6 @@ The Flux Helm operator will receive the delete event and will purge the Helm rel
 
 On `FluxHelmRelease` CRD deletion, Kubernetes will remove all `FluxHelmRelease` CRs triggering a Helm purge for each release created by Flux.
 To avoid this you have to manually delete the Flux Helm Operator with `kubectl -n flux delete deployment/flux-helm-operator` before running `helm delete flux`.
-
-**How do I store Kubernetes secretes safely in a public Git repo?**
-
-You can use Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) and encrypt your Kubernetes Secret into a SealedSecret. 
-The SealedSecret can be decrypted only by the controller running in the target cluster.
-
-You can generate a Kubernetes secret offline with kubectl, encrypt it with kubeseal CLI and commit the SealedSecret YAML to Git:
-
-```bash
-kubectl create secret generic basic-auth \
---from-literal=basic-auth-user=admin \
---from-literal=basic-auth-password=password \
---dry-run \
--o json > basic-auth.json
-
-kubeseal --format=yaml --cert=pub-cert.pem < basic-auth.json > basic-auth.yaml
-
-rm basic-auth.json
-```
 
 **I have a dedicated Kubernetes cluster per environment and I want to use the same Git repo for all. How can I do that?**
 
