@@ -6,6 +6,9 @@ metadata:
   namespace: stg
   labels:
     chart: podinfo
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.gateway: glob:stg-*
 spec:
   chartGitPath: podinfo
   releaseName: podinfo-stg
