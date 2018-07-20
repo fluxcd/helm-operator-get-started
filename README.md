@@ -176,8 +176,18 @@ REVISION	UPDATED                 	STATUS    	CHART        	DESCRIPTION
 ```
 
 The Flux Helm Operator reacts to changes in the FluxHelmResources but can also detect changes in the charts source files.
-
 If I make a change to the podinfo chart, the operator will pick that up and run an upgrade. 
+
+![gitops-chart-change](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-chart-update.png)
+
+```
+$ helm history podinfo-dev
+
+REVISION	UPDATED                 	STATUS    	CHART        	DESCRIPTION     
+1       	Fri Jul 20 16:51:52 2018	SUPERSEDED	podinfo-0.2.0	Install complete
+2       	Fri Jul 20 22:18:46 2018	SUPERSEDED	podinfo-0.2.0	Upgrade complete
+3       	Fri Jul 20 22:39:39 2018	DEPLOYED  	podinfo-0.2.1	Upgrade complete
+```
 
 Now let's assume that I want to promote the code from the `dev` branch into a more stable environment for others to test it. 
 I would create a release candidate by merging the podinfo code from `dev` into the `stg` branch. 
