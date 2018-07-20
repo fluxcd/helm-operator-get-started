@@ -229,6 +229,50 @@ spec:
 
 ### FAQ
 
+**My Helm charts have more than one container image. How can I automate the image tag update for all my containers?**
+
+Each container image must have the following format:
+
+```yaml
+container_name_1:
+  image: repo/app1:tag
+container_name_2:
+  image: quay.io/repo/app2:tag
+```
+
+Here is an example with different deployment policies:
+
+```yaml
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: openfaas
+  namespace: openfaas
+  labels:
+    chart: openfaas
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.prometheus: glob:v2.3.*
+    flux.weave.works/tag.alertmanager: glob:v0.*.*
+    flux.weave.works/tag.nats: glob:*.*.*
+spec:
+  chartGitPath: openfaas
+  releaseName: openfaas
+  values:
+    gateway:
+      image: openfaas/gateway:0.8.5
+    operator:
+      image: openfaas/openfaas-operator:0.8.0
+    queueWorker:
+      image: openfaas/queue-worker:0.4.4-rc1
+    prometheus:
+      image: prom/prometheus:v2.3.1
+    alertmanager:
+      image: prom/alertmanager:v0.15.0
+    nats:
+      image: nats-streaming:0.6.0
+```
+
 **I'm using SSL between Helm and Tiller. How can I configure Flux to use the certificate?**
 
 When installing Flux, you can supply the CA and client-side certificate using the `helmOperator.tls` options, more details [here](https://github.com/weaveworks/flux/blob/master/chart/flux/README.md#installing-weave-flux-helm-operator-and-helm-with-tls-enabled).  
