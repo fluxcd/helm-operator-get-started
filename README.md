@@ -58,7 +58,6 @@ The Flux daemon synchronizes these resources from git to the cluster,
 and the Flux Helm operator makes sure Helm charts are released as specified in the resources.
 
 Note that Flux Helm Operator works with Kubernetes 1.9 or newer. 
-If you are running Tiller with TLS you'll need to configure the operator to use the client certificate, more details [here](https://github.com/weaveworks/flux/blob/master/chart/flux/README.md#installing-weave-flux-helm-operator-and-helm-with-tls-enabled).  
 
 At startup Flux generates a SSH key and logs the public key. 
 Find the SSH public key with:
@@ -227,6 +226,55 @@ spec:
       cpu: 50
       memory: 128Mi
 ```
+
+### FAQ
+
+**I'm using SSL between Helm and Tiller. How can I configure Flux to use the CA and client-side certificate?**
+
+You have to install the Flux Helm Operator using the `helmOperator.tls` options, more details [here](https://github.com/weaveworks/flux/blob/master/chart/flux/README.md#installing-weave-flux-helm-operator-and-helm-with-tls-enabled).  
+
+**I've deleted a `FluxHelmRelease` file from Git. Why is the Helm release still running on my cluster?**
+
+Flux doesn't delete resources, there is an opened [issue](https://github.com/weaveworks/flux/issues/738) about this topic on GitHub. 
+In order to delete a Helm release first remove the file from Git and afterwards run:
+
+```yaml
+kubectl -n dev delete fluxhelmrelease/podinfo-dev
+```
+
+The Flux Helm operator will receive the delete event and will purge the Helm release.
+
+**How do I store Kubernetes secretes safely in a public Git repo?**
+
+You can use Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) and encrypt your Kubernetes Secret into a SealedSecret. 
+The SealedSecret can be decrypted only by the controller running in the target cluster.
+
+You can generate a Kubernetes secret offline with kubectl, encrypt it with kubeseal CLI and commit the SealedSecret YAML to Git:
+
+```bash
+kubectl create secret generic basic-auth \
+--from-literal=basic-auth-user=admin \
+--from-literal=basic-auth-password=password \
+--dry-run \
+-o json > basic-auth.json
+
+kubeseal --format=yaml --cert=pub-cert.pem < basic-auth.json > basic-auth.yaml
+
+rm basic-auth.json
+```
+
+**I have a dedicated Kubernetes cluster per environment and I want to use the same Git repo for all. How can I do that?**
+
+For each cluster create a Git branch in your config repo. When installing Flux set the Git branch using `--set git.branch=cluster-name`.
+
+**How can I monitor the CD pipeline and the workloads managed by Flux?**
+
+Weave Cloud is a SaaS product by Weaveworks that extends Flux with:
+
+* a UI for all Flux operations, audit trail and alerts for deployments
+* a realtime map of your cluster to debug and analyse its state
+* full observability and insights into your cluster (hosted Prometheus with 13 months of metrics history)
+* instant Flux operations via GitHub webhooks routing
 
 ### Getting Help
 
