@@ -182,7 +182,7 @@ REVISION	UPDATED                 	STATUS    	CHART        	DESCRIPTION
 2       	Fri Jul 20 22:18:46 2018	DEPLOYED  	podinfo-0.2.0	Upgrade complete
 ```
 
-The Flux Helm Operator reacts to changes in the FluxHelmResources collection but can also detect changes in the charts source files.
+The Flux Helm Operator reacts to changes in the FluxHelmResources collection but will also detect changes in the charts source files.
 If I make a change to the podinfo chart, the operator will pick that up and run an upgrade. 
 
 ![gitops-chart-change](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-chart-update.png)
@@ -209,13 +209,13 @@ The push refers to repository [docker.io/stefanprodan/podinfo]
 ```
 
 Assuming the staging environment has some sort of automated load testing in place, 
-I want to have a different configuration to my dev release: 
+I want to have a different configuration than dev: 
 
 ```yaml
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
 kind: FluxHelmRelease
 metadata:
-  name: podinfo-stg
+  name: podinfo-rc
   namespace: stg
   labels:
     chart: podinfo
@@ -224,7 +224,7 @@ metadata:
     flux.weave.works/tag.chart-image: glob:stg-*
 spec:
   chartGitPath: podinfo
-  releaseName: podinfo-stg
+  releaseName: podinfo-rc
   values:
     image: stefanprodan/podinfo:stg-9ij63o4c
     replicaCount: 2
