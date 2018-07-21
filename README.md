@@ -165,6 +165,8 @@ Flux Helm release fields:
 * `spec.chartGitPath` is the directory containing the chart, given relative to the charts path
 * `spec.values` are user customizations of default parameter values from the chart itself
 
+The options specified in the FluxHelmRelease `spec.values` will override the ones in `values.yaml` from the chart source. 
+
 With the `flux.weave.works` annotations I instruct Flux to automate this release.
 When a new tag with the prefix `dev` is pushed to Docker Hub, Flux will update the image field in the yaml file, 
 will commit and push the change to Git and finally will apply the change on the cluster. 
@@ -235,7 +237,15 @@ spec:
       memory: 128Mi
 ```
 
-The options specified in the FluxHelmRelease `spec.values` will override the ones in `values.yaml` from the chart source. 
+With Flux Helm releases it's easy to manage different configurations per environment. 
+When adding a new option in the chart source make sure it's turned off by default so it would not affect all environments.
+
+If I want to create a new environment, let's say for hotfixes testing, I would do the following:
+* create a new namespace definition in `namespaces/hotfix.yaml`
+* create a dir `releases/hotfix`
+* create a FluxHelmRelease named `podinfo-hotfix`
+* set automation filter to `glob:hotfix-*`
+* make the CI tooling publish images from my hotfix branch to `stefanprodan/podinfo:hotfix-sha`
 
 ### Managing Kubernetes secretes
 
@@ -243,7 +253,7 @@ In order to store secretes safely in a public Git repo you can use Bitnami [Seal
 and encrypt your Kubernetes Secrets into SealedSecrets. 
 The SealedSecret can be decrypted only by the controller running in your cluster.
 
-This is the Sealed Secrets controller release:
+This is the sealed-secrets controller release:
 
 ```yaml
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
@@ -262,15 +272,15 @@ spec:
 
 Note that this release is not automated, since this is a critical component I prefer to update it manually. 
 
-Install the `kubeseal` CLI:
+Install the kubeseal CLI:
 
 ```bash
 wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.7.0/kubeseal-darwin-amd64
 sudo install -m 755 kubeseal-darwin-amd64 /usr/local/bin/kubeseal
 ```
 
-At startup, the Sealed Secrets Controller generates a RSA key and logs the public key. 
-Using `kubeseal` you can save your public key as `pub-cert.pem`, 
+At startup, the sealed-secrets controller generates a RSA key and logs the public key. 
+Using kubeseal you can save your public key as `pub-cert.pem`, 
 the public key can be safely stored in Git, and can be used to encrypt secrets without direct access to the Kubernetes cluster:
 
 ```bash
@@ -315,18 +325,18 @@ mv basic-auth.yaml /releases/dev/
 git commit -a -m "Add basic auth credentials to dev namespace" && git push
 ```
 
-Flux will apply the sealed secret on your cluster and Sealed Secrets Controller will then decrypt it into a 
+Flux will apply the sealed secret on your cluster and sealed-secrets controller will then decrypt it into a 
 Kubernetes secret. 
 
 ![SealedSecrets](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-secrets.png)
 
-To prepare for disaster recovery you should backup the SealedSecrets private key with:
+To prepare for disaster recovery you should backup the sealed-secrets controller private key with:
 
 ```bash
 kubectl get secret -n adm sealed-secrets-key -o yaml --export > sealed-secrets-key.yaml
 ```
 
-To restore from backup after a disaster, replace the newly-created secret and restart the sealed-secrets controller:
+To restore from backup after a disaster, replace the newly-created secret and restart the controller:
 
 ```bash
 kubectl replace secret -n adm sealed-secrets-key -f sealed-secrets-key.yaml
