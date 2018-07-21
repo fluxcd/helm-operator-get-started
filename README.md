@@ -229,7 +229,7 @@ The options specified in the FluxHelmRelease `spec.values` will override the one
 
 ### Managing Kubernetes secretes
 
-In oder to store secretes safely in a public Git repo you can use Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) 
+In order to store secretes safely in a public Git repo you can use Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) 
 and encrypt your Kubernetes Secrets into SealedSecrets. 
 The SealedSecret can be decrypted only by the controller running in your cluster.
 
@@ -252,14 +252,11 @@ spec:
 
 Note that this release is not automated, since this is a critical component I prefer to update it manually. 
 
-In order to encrypt secrets, install the `kubeseal` CLI:
+Install the `kubeseal` CLI:
 
 ```bash
-release=$(curl --silent "https://api.github.com/repos/bitnami-labs/sealed-secrets/releases/latest" | sed -n 's/.*"tag_name": *"\([^"]*\)".*/\1/p')
-GOOS=$(go env GOOS)
-GOARCH=$(go env GOARCH)
-wget https://github.com/bitnami/sealed-secrets/releases/download/$release/kubeseal-$GOOS-$GOARCH
-sudo install -m 755 kubeseal-$GOOS-$GOARCH /usr/local/bin/kubeseal
+wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.7.0/kubeseal-darwin-amd64
+sudo install -m 755 kubeseal-darwin-amd64 /usr/local/bin/kubeseal
 ```
 
 At startup, the Sealed Secrets Controller generates a RSA key and logs the public key. 
