@@ -247,9 +247,9 @@ If I want to create a new environment, let's say for hotfixes testing, I would d
 * set automation filter to `glob:hotfix-*`
 * make the CI tooling publish images from my hotfix branch to `stefanprodan/podinfo:hotfix-sha`
 
-### Managing Kubernetes secretes
+### Managing Kubernetes secrets
 
-In order to store secretes safely in a public Git repo you can use Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) 
+In order to store secrets safely in a public Git repo you can use Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) 
 and encrypt your Kubernetes Secrets into SealedSecrets. 
 The SealedSecret can be decrypted only by the controller running in your cluster.
 
