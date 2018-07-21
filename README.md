@@ -98,20 +98,30 @@ The config repo has the following structure:
 
 I will be using [podinfo](https://github.com/stefanprodan/k8s-podinfo) to demonstrate a full CI/CD pipeline including promoting releases between environments.  
 
-Inside the *hack* dir you can find a script that simulates the CI process. 
+I'm assuming the following Git branching model:
+* dev branch (feature-ready state)
+* stg branch (release-candidate state)
+* master branch (production-ready state)
+
+When a PR is merged in the dev or stg branch will produce a immutable container image as in `repo/app:branch-commitsha`.
+
+Inside the *hack* dir you can find a script that simulates the CI process for dev and stg. 
 The *ci-mock.sh* script does the following:
 * pulls the podinfo source code from GitHub
-* generates a random string that will serve as the Git commit short SHA
+* generates a random string and modifies the code
+* generates a random Git commit short SHA
 * builds a Docker image with the format: `yourname/podinfo:branch-sha`
 * pushes the image to Docker Hub
 
 Let's create an image corresponding to the `dev` branch (replace `stefanprodan` with your Docker Hub username):
 
 ```
-$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -b dev -v 1.0.0-alpha1
+$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -b dev
 
 Sending build context to Docker daemon  4.096kB
 Step 1/15 : FROM golang:1.10 as builder
+....
+Step 9/15 : FROM alpine:3.7
 ....
 Step 12/15 : COPY --from=builder /go/src/github.com/stefanprodan/k8s-podinfo/podinfo .
 ....
@@ -191,7 +201,7 @@ I would create a release candidate by merging the podinfo code from `dev` into t
 The CI would kick in and publish a new image:
 
 ```bash
-$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -b stg -v 1.0.0-beta1
+$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -b stg -v 1.1.0-rc1
 
 Successfully tagged stefanprodan/podinfo:stg-9ij63o4c
 The push refers to repository [docker.io/stefanprodan/podinfo]
@@ -319,7 +329,7 @@ kubectl get secret -n adm sealed-secrets-key -o yaml --export > sealed-secrets-k
 To restore from backup after a disaster, replace the newly-created secret and restart the sealed-secrets controller:
 
 ```bash
-kubectl replace secret -n flux sealed-secrets-key -f sealed-secrets-key.yaml
+kubectl replace secret -n adm sealed-secrets-key -f sealed-secrets-key.yaml
 kubectl delete pod -n adm -l app=sealed-secrets
 ```
 
@@ -327,7 +337,7 @@ kubectl delete pod -n adm -l app=sealed-secrets
 
 **My Helm charts have more than one container image. How can I automate the image tag update for all my containers?**
 
-Each container image must have the following format:
+A container image list must have the following format:
 
 ```yaml
 container_name_1:
@@ -336,7 +346,7 @@ container_name_2:
   image: quay.io/repo/app2:tag
 ```
 
-Here is an example with different deployment policies:
+Here is an example with different deployment automation policies:
 
 ```yaml
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
