@@ -13,8 +13,8 @@ This way rollback and audit logs are provided by Git.
 If the entire production state is under version control and described in a single Git repository, when disaster strikes, 
 the whole infrastructure can be quickly restored from that repository.
 
-To better understand the benefits of this approach to CD and what are the differences between GitOps and 
-Infrastructure-as-Code tools, head to Weaveworks website and read [GitOps - What you need to know](https://www.weave.works/technologies/gitops/) article.
+To better understand the benefits of this approach to CD and what the differences between GitOps and 
+Infrastructure-as-Code tools are, head to the Weaveworks website and read [GitOps - What you need to know](https://www.weave.works/technologies/gitops/) article.
 
 In order to apply the GitOps pipeline model to Kubernetes you need three things: 
 
@@ -30,7 +30,7 @@ I will be using GitHub to host the config repo, Docker Hub as the container regi
 
 ### Install Weave Flux
 
-First step in automating Helm releases with [Weave Flux](https://github.com/weaveworks/flux) is to create a Git repository with your charts source code.
+The first step in automating Helm releases with [Weave Flux](https://github.com/weaveworks/flux) is to create a Git repository with your charts source code.
 You can fork the [gitops-helm](https://github.com/stefanprodan/gitops-helm) project and use it as a template for your cluster config.
 
 Add the Weave Flux chart repo:
@@ -238,18 +238,18 @@ spec:
 ```
 
 With Flux Helm releases it's easy to manage different configurations per environment. 
-When adding a new option in the chart source make sure it's turned off by default so it would not affect all environments.
+When adding a new option in the chart source make sure it's turned off by default so it will not affect all environments.
 
 If I want to create a new environment, let's say for hotfixes testing, I would do the following:
 * create a new namespace definition in `namespaces/hotfix.yaml`
 * create a dir `releases/hotfix`
 * create a FluxHelmRelease named `podinfo-hotfix`
-* set automation filter to `glob:hotfix-*`
+* set the automation filter to `glob:hotfix-*`
 * make the CI tooling publish images from my hotfix branch to `stefanprodan/podinfo:hotfix-sha`
 
 ### Managing Kubernetes secrets
 
-In order to store secrets safely in a public Git repo you can use Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) 
+In order to store secrets safely in a public Git repo you can use the Bitnami [Sealed Secrets controller](https://github.com/bitnami-labs/sealed-secrets) 
 and encrypt your Kubernetes Secrets into SealedSecrets. 
 The SealedSecret can be decrypted only by the controller running in your cluster.
 
@@ -395,7 +395,7 @@ When installing Flux, you can supply the CA and client-side certificate using th
 
 **I've deleted a `FluxHelmRelease` file from Git. Why is the Helm release still running on my cluster?**
 
-Flux doesn't delete resources, there is an opened [issue](https://github.com/weaveworks/flux/issues/738) about this topic on GitHub. 
+Flux doesn't delete resources, there is an [issue](https://github.com/weaveworks/flux/issues/738) opened about this topic on GitHub. 
 In order to delete a Helm release first remove the file from Git and afterwards run:
 
 ```yaml
@@ -415,7 +415,7 @@ For each cluster create a Git branch in your config repo. When installing Flux s
 
 **How can I monitor the CD pipeline and the workloads managed by Flux?**
 
-Weave Cloud is a SaaS product by Weaveworks that extends Flux with:
+[Weave Cloud](https://www.weave.works/product/cloud/) is a SaaS product by Weaveworks that extends Flux with:
 
 * a UI for all Flux operations, audit trail and alerts for deployments
 * a realtime map of your cluster to debug and analyse its state
