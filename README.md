@@ -1,5 +1,7 @@
 # Managing Helm releases the GitOps way
 
+[![Build Status](https://travis-ci.org/stefanprodan/gitops-helm.svg?branch=master)](https://travis-ci.org/stefanprodan/gitops-helm)
+
 **What is GitOps?**
 
 GitOps is a way to do Continuous Delivery, it works by using Git as a source of truth for declarative infrastructure and workloads. 
@@ -27,6 +29,34 @@ In order to apply the GitOps pipeline model to Kubernetes you need three things:
 I will be using GitHub to host the config repo, Docker Hub as the container registry and Weave Flux OSS as the GitOps Kubernetes Operator.
 
 ![gitops](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-gitops.png)
+
+### Install Helm and Tiller
+
+If you don't have Helm CLI installed, on macOS you can use `brew install kubernetes-helm`.   
+
+Create a service account and a cluster role binding for Tiller: 
+
+```bash
+kubectl -n kube-system create sa tiller
+
+kubectl create clusterrolebinding tiller-cluster-rule \
+    --clusterrole=cluster-admin \
+    --serviceaccount=kube-system:tiller 
+```
+
+Note that on GKE you need to create an admin cluster user for yourself:
+
+```bash
+kubectl create clusterrolebinding "cluster-admin-$(whoami)" \
+    --clusterrole=cluster-admin \
+    --user="$(gcloud config get-value core/account)"
+```
+
+Deploy Tiller in kube-system namespace:
+
+```bash
+helm init --skip-refresh --upgrade --service-account tiller
+```
 
 ### Install Weave Flux
 
