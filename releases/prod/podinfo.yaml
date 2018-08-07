@@ -13,4 +13,4 @@ spec:
     image: quay.io/stefanprodan/podinfo:0.5.0
     replicaCount: 1
     hpa:
-      enabled: false
+      enabled: true
