@@ -280,8 +280,9 @@ If I want to create a new environment, let's say for hotfixes testing, I would d
 For production, instead of tagging the images with the Git commit, I would use [Semantic Versioning](https://semver.org).
 
 Let's assume that I want to promote the code from the `stg` branch into `master` and do a production release. 
-After merging the `stg` into `master` I would cut a release by tagging `master` with my new version `0.4.1`.
-On Git tag the the CI would kick in and publish a new image as in `podinfo:version`:
+After merging the `stg` into `master` I would cut a release by tagging `master` with my new version `0.4.11`.
+
+When I push the git tag, the CI will publish a new image in the `repo/app:git_tag` format:
 
 ```bash
 $ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -v 0.4.10
@@ -290,7 +291,7 @@ Successfully built f176482168f8
 Successfully tagged stefanprodan/podinfo:0.4.10
 ``` 
 
-I want to automate the production deployment based on version tags, I would use `semver` filters instead of `glob`:
+If I want to automate the production deployment based on version tags, I would use `semver` filters instead of `glob`:
 
 ```yaml
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
