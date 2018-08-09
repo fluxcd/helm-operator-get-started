@@ -277,10 +277,12 @@ If I want to create a new environment, let's say for hotfixes testing, I would d
 * set the automation filter to `glob:hotfix-*`
 * make the CI tooling publish images from my hotfix branch to `stefanprodan/podinfo:hotfix-sha`
 
-For production, instead of tagging the images with the Git commit, I would use [Semantic Versioning](https://semver.org).
+### Production promotions with sem ver
+
+For production, instead of tagging the images with the Git commit, I will use [Semantic Versioning](https://semver.org).
 
 Let's assume that I want to promote the code from the `stg` branch into `master` and do a production release. 
-After merging the `stg` into `master` I would cut a release by tagging `master` with my new version `0.4.11`.
+After merging `stg` into `master` via a pull request, I would cut a release by tagging `master` with version `0.4.10`.
 
 When I push the git tag, the CI will publish a new image in the `repo/app:git_tag` format:
 
