@@ -307,7 +307,7 @@ spec:
   chartGitPath: podinfo
   releaseName: podinfo-prod
   values:
-    image: quay.io/stefanprodan/podinfo:0.4.0
+    image: stefanprodan/podinfo:0.4.0
     replicaCount: 3
 ```
 
