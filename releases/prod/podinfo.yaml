@@ -6,11 +6,12 @@ metadata:
   namespace: prod
   labels:
     chart: podinfo
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.chart-image: semver:~0.4
 spec:
   chartGitPath: podinfo
   releaseName: podinfo-prod
   values:
-    image: quay.io/stefanprodan/podinfo:0.5.0
-    replicaCount: 1
-    hpa:
-      enabled: true
+    image: quay.io/stefanprodan/podinfo:0.4.0
+    replicaCount: 3

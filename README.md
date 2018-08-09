@@ -233,7 +233,7 @@ I would create a release candidate by merging the podinfo code from `dev` into t
 The CI would kick in and publish a new image:
 
 ```bash
-$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -b stg -v 1.1.0-rc1
+$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -b stg
 
 Successfully tagged stefanprodan/podinfo:stg-9ij63o4c
 The push refers to repository [docker.io/stefanprodan/podinfo]
@@ -276,6 +276,40 @@ If I want to create a new environment, let's say for hotfixes testing, I would d
 * create a FluxHelmRelease named `podinfo-hotfix`
 * set the automation filter to `glob:hotfix-*`
 * make the CI tooling publish images from my hotfix branch to `stefanprodan/podinfo:hotfix-sha`
+
+For production, instead of tagging the images with the Git commit, I would use [Semantic Versioning](https://semver.org).
+
+Let's assume that I want to promote the code from the `stg` branch into `master` and do a production release. 
+After merging the `stg` into `master` I would cut a release by tagging `master` with my new version `0.4.1`.
+On Git tag the the CI would kick in and publish a new image as in `podinfo:version`:
+
+```bash
+$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -v 0.4.1
+
+Successfully built f176482168f8
+Successfully tagged stefanprodan/podinfo:0.4.1
+``` 
+
+Now if I want to automate the production deployment based on version tags, I would use `semver` filters instead of `glob`:
+
+```yaml
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: podinfo-prod
+  namespace: prod
+  labels:
+    chart: podinfo
+  annotations:
+    flux.weave.works/automated: "true"
+    flux.weave.works/tag.chart-image: semver:~0.4
+spec:
+  chartGitPath: podinfo
+  releaseName: podinfo-prod
+  values:
+    image: quay.io/stefanprodan/podinfo:0.4.0
+    replicaCount: 3
+```
 
 ### Managing Kubernetes secrets
 
