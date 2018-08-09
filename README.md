@@ -284,13 +284,13 @@ After merging the `stg` into `master` I would cut a release by tagging `master` 
 On Git tag the the CI would kick in and publish a new image as in `podinfo:version`:
 
 ```bash
-$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -v 0.4.1
+$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -v 0.4.10
 
 Successfully built f176482168f8
-Successfully tagged stefanprodan/podinfo:0.4.1
+Successfully tagged stefanprodan/podinfo:0.4.10
 ``` 
 
-Now if I want to automate the production deployment based on version tags, I would use `semver` filters instead of `glob`:
+I want to automate the production deployment based on version tags, I would use `semver` filters instead of `glob`:
 
 ```yaml
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
@@ -307,9 +307,19 @@ spec:
   chartGitPath: podinfo
   releaseName: podinfo-prod
   values:
-    image: stefanprodan/podinfo:0.4.0
+    image: stefanprodan/podinfo:0.4.10
     replicaCount: 3
 ```
+
+Now if I release a new patch, let's say `0.4.11`, Flux will automatically deploy it.
+
+```bash
+$ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -v 0.4.11
+
+Successfully tagged stefanprodan/podinfo:0.4.11
+```
+
+![gitops-semver](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-semver.png)
 
 ### Managing Kubernetes secrets
 
