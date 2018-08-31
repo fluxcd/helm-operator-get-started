@@ -77,7 +77,6 @@ helm install --name flux \
 --set rbac.create=true \
 --set helmOperator.create=true \
 --set git.url=ssh://git@github.com/stefanprodan/gitops-helm \
---set git.chartsPath=charts \
 --namespace flux \
 weaveworks/flux
 ```

@@ -17,4 +17,4 @@ spec:
       enabled: true
       maxReplicas: 10
       cpu: 50
-      memory: 128Mi
+      memory: 256Mi
