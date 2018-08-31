@@ -4,8 +4,6 @@ kind: FluxHelmRelease
 metadata:
   name: podinfo-prod
   namespace: prod
-  labels:
-    chart: podinfo
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: semver:~0.4

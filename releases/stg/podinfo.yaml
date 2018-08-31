@@ -4,8 +4,6 @@ kind: FluxHelmRelease
 metadata:
   name: podinfo-rc
   namespace: stg
-  labels:
-    chart: podinfo
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: glob:stg-*

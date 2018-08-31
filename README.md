@@ -173,8 +173,6 @@ kind: FluxHelmRelease
 metadata:
   name: podinfo-dev
   namespace: dev
-  labels:
-    chart: podinfo
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: glob:dev-*
@@ -190,7 +188,6 @@ Flux Helm release fields:
 
 * `metadata.name` is mandatory and needs to follow Kubernetes naming conventions
 * `metadata.namespace` is optional and determines where the release is created
-* `metadata.labels.chart` is mandatory and should match the directory containing the chart
 * `spec.releaseName` is optional and if not provided the release name will be $namespace-$name
 * `spec.chartGitPath` is the directory containing the chart, given relative to the charts path
 * `spec.values` are user customizations of default parameter values from the chart itself
@@ -249,8 +246,6 @@ kind: FluxHelmRelease
 metadata:
   name: podinfo-rc
   namespace: stg
-  labels:
-    chart: podinfo
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: glob:stg-*
@@ -301,8 +296,6 @@ kind: FluxHelmRelease
 metadata:
   name: podinfo-prod
   namespace: prod
-  labels:
-    chart: podinfo
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: semver:~0.4
@@ -338,8 +331,6 @@ kind: FluxHelmRelease
 metadata:
   name: sealed-secrets
   namespace: adm
-  labels:
-    chart: sealed-secrets
 spec:
   chartGitPath: sealed-secrets
   releaseName: sealed-secrets
@@ -441,8 +432,6 @@ kind: FluxHelmRelease
 metadata:
   name: openfaas
   namespace: openfaas
-  labels:
-    chart: openfaas
   annotations:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.prometheus: glob:v2.3.*
