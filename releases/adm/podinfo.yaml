@@ -17,16 +17,5 @@ spec:
       tag: 1.2.1
       pullPolicy: IfNotPresent
 
-    ingress:
-      enabled: true
-      annotations:
-        kubernetes.io/ingress.class: "contour"
-        certmanager.k8s.io/cluster-issuer: "letsencrypt"
-        contour.heptio.com/request-timeout: "30s"
-      hosts:
-      - host: eks.weavedx.com
-        path: /
-      tls:
-      - secretName: podinfo-cert
-        hosts:
-        - eks.weavedx.com
+    service:
+      type: LoadBalancer
