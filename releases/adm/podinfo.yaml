@@ -1,0 +1,34 @@
+---
+apiVersion: helm.integrations.flux.weave.works/v1alpha2
+kind: FluxHelmRelease
+metadata:
+  name: podinfo-adm
+  namespace: adm
+  annotations:
+    flux.weave.works/automated: "false"
+    flux.weave.works/tag.chart-image: semver:~1.2
+spec:
+  chartGitPath: podinfo-v1
+  releaseName: podinfo-adm
+  values:
+
+    image:
+      repository: quay.io/stefanprodan/podinfo
+      tag: 1.2.1
+      pullPolicy: IfNotPresent
+
+    ingress:
+      enabled: true
+      annotations:
+        kubernetes.io/ingress.class: "contour"
+        certmanager.k8s.io/cluster-issuer: "letsencrypt"
+        contour.heptio.com/request-timeout: "30s"
+      hosts:
+      - host: eks.weavedx.com
+        serviceName: podinfo-adm
+        servicePort: 9898
+        path: /
+      tls:
+      - secretName: podinfo-cert
+        hosts:
+        - eks.weavedx.com
