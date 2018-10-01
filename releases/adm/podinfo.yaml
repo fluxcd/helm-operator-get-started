@@ -5,7 +5,7 @@ metadata:
   name: podinfo-adm
   namespace: adm
   annotations:
-    flux.weave.works/automated: "false"
+    flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: semver:~1.2
 spec:
   chartGitPath: podinfo-v1
