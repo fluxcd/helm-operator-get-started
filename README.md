@@ -166,7 +166,7 @@ The push refers to repository [docker.io/stefanprodan/podinfo]
 
 Inside the *charts* directory there is a podinfo Helm chart. 
 Using this chart I want to create a release in the `dev` namespace with the image I've just published to Docker Hub.
-Instead of editing the `values.yaml` from the chart source I will create a `FluxHelmRelease` definition: 
+Instead of editing the `values.yaml` from the chart source, I create a `FluxHelmRelease` definition (located in /releases/dev/podinfo.yaml): 
 
 ```yaml
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
