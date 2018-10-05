@@ -11,5 +11,5 @@ spec:
   chartGitPath: podinfo
   releaseName: podinfo-prod
   values:
-    image: stefanprodan/podinfo:0.4.11
+    image: patrickbadley/podinfo:0.4.11
     replicaCount: 3
