@@ -63,6 +63,8 @@ helm init --skip-refresh --upgrade --service-account tiller
 The first step in automating Helm releases with [Weave Flux](https://github.com/weaveworks/flux) is to create a Git repository with your charts source code.
 You can fork the [gitops-helm](https://github.com/stefanprodan/gitops-helm) project and use it as a template for your cluster config.
 
+*If you fork, update the release definitions with your docker hub repository located in \releases\(dev/stg/prod)\podinfo.yaml in your master branch before proceeding.
+
 Add the Weave Flux chart repo:
 
 ```bash
@@ -164,7 +166,7 @@ The push refers to repository [docker.io/stefanprodan/podinfo]
 
 Inside the *charts* directory there is a podinfo Helm chart. 
 Using this chart I want to create a release in the `dev` namespace with the image I've just published to Docker Hub.
-Instead of editing the `values.yaml` from the chart source I will create a `FluxHelmRelease` definition: 
+Instead of editing the `values.yaml` from the chart source, I create a `FluxHelmRelease` definition (located in /releases/dev/podinfo.yaml): 
 
 ```yaml
 apiVersion: helm.integrations.flux.weave.works/v1alpha2
