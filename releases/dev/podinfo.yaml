@@ -13,5 +13,6 @@ spec:
   values:
     image: ttarczynski/podinfo:dev-permdesi
     replicaCount: 1
+    dryRun: false
     hpa:
       enabled: false
