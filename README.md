@@ -63,7 +63,8 @@ helm init --skip-refresh --upgrade --service-account tiller
 The first step in automating Helm releases with [Weave Flux](https://github.com/weaveworks/flux) is to create a Git repository with your charts source code.
 You can fork the [gitops-helm](https://github.com/stefanprodan/gitops-helm) project and use it as a template for your cluster config.
 
-*If you fork, update the release definitions with your docker hub repository located in \releases\(dev/stg/prod)\podinfo.yaml in your master branch before proceeding.
+*If you fork, update the release definitions with your Docker Hub repository and GitHub username located in 
+\releases\(dev/stg/prod)\podinfo.yaml in your master branch before proceeding.
 
 Add the Weave Flux chart repo:
 
@@ -78,7 +79,7 @@ Install Weave Flux and its Helm Operator by specifying your fork URL
 helm install --name flux \
 --set rbac.create=true \
 --set helmOperator.create=true \
---set git.url=ssh://git@github.com/stefanprodan/gitops-helm \
+--set git.url=git@github.com:stefanprodan/gitops-helm \
 --namespace flux \
 weaveworks/flux
 ```
@@ -166,11 +167,11 @@ The push refers to repository [docker.io/stefanprodan/podinfo]
 
 Inside the *charts* directory there is a podinfo Helm chart. 
 Using this chart I want to create a release in the `dev` namespace with the image I've just published to Docker Hub.
-Instead of editing the `values.yaml` from the chart source, I create a `FluxHelmRelease` definition (located in /releases/dev/podinfo.yaml): 
+Instead of editing the `values.yaml` from the chart source, I create a `HelmRelease` definition (located in /releases/dev/podinfo.yaml): 
 
 ```yaml
-apiVersion: helm.integrations.flux.weave.works/v1alpha2
-kind: FluxHelmRelease
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
 metadata:
   name: podinfo-dev
   namespace: dev
@@ -178,8 +179,11 @@ metadata:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: glob:dev-*
 spec:
-  chartGitPath: podinfo
   releaseName: podinfo-dev
+  chart:
+    git: git@github.com:stefanprodan/gitops-helm
+    path: charts/podinfo
+    ref: master
   values:
     image: stefanprodan/podinfo:dev-kb9lm91e
     replicaCount: 1
@@ -190,7 +194,7 @@ Flux Helm release fields:
 * `metadata.name` is mandatory and needs to follow Kubernetes naming conventions
 * `metadata.namespace` is optional and determines where the release is created
 * `spec.releaseName` is optional and if not provided the release name will be $namespace-$name
-* `spec.chartGitPath` is the directory containing the chart, given relative to the charts path
+* `spec.chart.path` is the directory containing the chart, given relative to the repository root
 * `spec.values` are user customizations of default parameter values from the chart itself
 
 The options specified in the FluxHelmRelease `spec.values` will override the ones in `values.yaml` from the chart source. 
@@ -201,7 +205,7 @@ will commit and push the change to Git and finally will apply the change on the 
 
 ![gitops-automation](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-image-update.png)
 
-When the `podinfo-dev` FluxHelmRelease object changes inside the cluster, 
+When the `podinfo-dev` HelmRelease object changes inside the cluster, 
 Kubernetes API will notify the Flux Helm Operator and the operator will perform a Helm release upgrade. 
 
 ```
@@ -212,7 +216,7 @@ REVISION	UPDATED                 	STATUS    	CHART        	DESCRIPTION
 2       	Fri Jul 20 22:18:46 2018	DEPLOYED  	podinfo-0.2.0	Upgrade complete
 ```
 
-The Flux Helm Operator reacts to changes in the FluxHelmResources collection but will also detect changes in the charts source files.
+The Flux Helm Operator reacts to changes in the HelmRelease collection but will also detect changes in the charts source files.
 If I make a change to the podinfo chart, the operator will pick that up and run an upgrade. 
 
 ![gitops-chart-change](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-chart-update.png)
@@ -242,8 +246,8 @@ Assuming the staging environment has some sort of automated load testing in plac
 I want to have a different configuration than dev: 
 
 ```yaml
-apiVersion: helm.integrations.flux.weave.works/v1alpha2
-kind: FluxHelmRelease
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
 metadata:
   name: podinfo-rc
   namespace: stg
@@ -251,8 +255,11 @@ metadata:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: glob:stg-*
 spec:
-  chartGitPath: podinfo
   releaseName: podinfo-rc
+  chart:
+    git: git@github.com:stefanprodan/gitops-helm
+    path: charts/podinfo
+    ref: master
   values:
     image: stefanprodan/podinfo:stg-9ij63o4c
     replicaCount: 2
@@ -292,8 +299,8 @@ Successfully tagged stefanprodan/podinfo:0.4.10
 If I want to automate the production deployment based on version tags, I would use `semver` filters instead of `glob`:
 
 ```yaml
-apiVersion: helm.integrations.flux.weave.works/v1alpha2
-kind: FluxHelmRelease
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
 metadata:
   name: podinfo-prod
   namespace: prod
@@ -301,8 +308,11 @@ metadata:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: semver:~0.4
 spec:
-  chartGitPath: podinfo
   releaseName: podinfo-prod
+  chart:
+    git: git@github.com:stefanprodan/gitops-helm
+    path: charts/podinfo
+    ref: master
   values:
     image: stefanprodan/podinfo:0.4.10
     replicaCount: 3
@@ -327,14 +337,16 @@ The SealedSecret can be decrypted only by the controller running in your cluster
 This is the sealed-secrets controller release:
 
 ```yaml
-apiVersion: helm.integrations.flux.weave.works/v1alpha2
-kind: FluxHelmRelease
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
 metadata:
   name: sealed-secrets
   namespace: adm
 spec:
-  chartGitPath: sealed-secrets
   releaseName: sealed-secrets
+    git: git@github.com:stefanprodan/gitops-helm
+    path: charts/sealed-secrets
+    ref: master
   values:
     image: quay.io/bitnami/sealed-secrets-controller:v0.7.0
 ```
@@ -416,7 +428,7 @@ kubectl delete pod -n adm -l app=sealed-secrets
 
 **My Helm charts have more than one container image. How can I automate the image tag update for all my containers?**
 
-A container image list must have the following format:
+A container image list can have the following format:
 
 ```yaml
 container_name_1:
@@ -428,26 +440,23 @@ container_name_2:
 Here is an example with different deployment automation policies:
 
 ```yaml
-apiVersion: helm.integrations.flux.weave.works/v1alpha2
-kind: FluxHelmRelease
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
 metadata:
   name: openfaas
   namespace: openfaas
   annotations:
     flux.weave.works/automated: "true"
-    flux.weave.works/tag.prometheus: glob:v2.3.*
-    flux.weave.works/tag.alertmanager: glob:v0.*.*
-    flux.weave.works/tag.nats: glob:*.*.*
+    flux.weave.works/tag.prometheus: semver:~2.3
+    flux.weave.works/tag.alertmanager: glob:v0.15.*
+    flux.weave.works/tag.nats: regexp:^0.6.*
 spec:
-  chartGitPath: openfaas
   releaseName: openfaas
+  chart:
+    repository: https://openfaas.github.io/faas-netes/
+    name: openfaas
+    version: 1.3.3
   values:
-    gateway:
-      image: openfaas/gateway:0.8.5
-    operator:
-      image: openfaas/openfaas-operator:0.8.0
-    queueWorker:
-      image: openfaas/queue-worker:0.4.4-rc1
     prometheus:
       image: prom/prometheus:v2.3.1
     alertmanager:
@@ -460,21 +469,21 @@ spec:
 
 When installing Flux, you can supply the CA and client-side certificate using the `helmOperator.tls` options, more details [here](https://github.com/weaveworks/flux/blob/master/chart/flux/README.md#installing-weave-flux-helm-operator-and-helm-with-tls-enabled).  
 
-**I've deleted a `FluxHelmRelease` file from Git. Why is the Helm release still running on my cluster?**
+**I've deleted a `HelmRelease` file from Git. Why is the Helm release still running on my cluster?**
 
 Flux doesn't delete resources, there is an [issue](https://github.com/weaveworks/flux/issues/738) opened about this topic on GitHub. 
 In order to delete a Helm release first remove the file from Git and afterwards run:
 
 ```yaml
-kubectl -n dev delete fluxhelmrelease/podinfo-dev
+kubectl -n dev delete hr/podinfo-dev
 ```
 
 The Flux Helm operator will receive the delete event and will purge the Helm release.
 
 **I've uninstalled Flux and all my Helm releases are gone. Why is that?**
 
-On `FluxHelmRelease` CRD deletion, Kubernetes will remove all `FluxHelmRelease` CRs triggering a Helm purge for each release created by Flux.
-To avoid this you have to manually delete the Flux Helm Operator with `kubectl -n flux delete deployment/flux-helm-operator` before running `helm delete flux`.
+On `HelmRelease` CRD deletion, Kubernetes will remove all `HelmRelease` CRs triggering a Helm purge for each release created by Flux.
+To avoid this you have to manually delete the Flux Helm Operator with `kubectl -n flux delete deployment/flux-helm-operator` before running `helm delete flux --purge`.
 
 **I have a dedicated Kubernetes cluster per environment and I want to use the same Git repo for all. How can I do that?**
 

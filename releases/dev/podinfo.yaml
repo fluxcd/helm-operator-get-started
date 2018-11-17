@@ -1,6 +1,6 @@
 ---
-apiVersion: helm.integrations.flux.weave.works/v1alpha2
-kind: FluxHelmRelease
+apiVersion: flux.weave.works/v1beta1
+kind: HelmRelease
 metadata:
   name: podinfo-dev
   namespace: dev
@@ -8,8 +8,11 @@ metadata:
     flux.weave.works/automated: "true"
     flux.weave.works/tag.chart-image: glob:dev-*
 spec:
-  chartGitPath: podinfo
   releaseName: podinfo-dev
+  chart:
+    git: git@github.com:stefanprodan/gitops-helm
+    path: charts/podinfo
+    ref: master
   values:
     image: stefanprodan/podinfo:dev-hdtwcel9
     replicaCount: 1
