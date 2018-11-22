@@ -85,7 +85,7 @@ weaveworks/flux
 ```
 
 The Flux Helm operator provides an extension to Weave Flux that automates Helm Chart releases for it. 
-A Chart release is described through a Kubernetes custom resource named FluxHelmRelease. 
+A Chart release is described through a Kubernetes custom resource named HelmRelease.
 The Flux daemon synchronizes these resources from git to the cluster, 
 and the Flux Helm operator makes sure Helm charts are released as specified in the resources.
 
@@ -197,7 +197,7 @@ Flux Helm release fields:
 * `spec.chart.path` is the directory containing the chart, given relative to the repository root
 * `spec.values` are user customizations of default parameter values from the chart itself
 
-The options specified in the FluxHelmRelease `spec.values` will override the ones in `values.yaml` from the chart source. 
+The options specified in the HelmRelease `spec.values` will override the ones in `values.yaml` from the chart source.
 
 With the `flux.weave.works` annotations I instruct Flux to automate this release.
 When a new tag with the prefix `dev` is pushed to Docker Hub, Flux will update the image field in the yaml file, 
@@ -276,7 +276,7 @@ When adding a new option in the chart source make sure it's turned off by defaul
 If I want to create a new environment, let's say for hotfixes testing, I would do the following:
 * create a new namespace definition in `namespaces/hotfix.yaml`
 * create a dir `releases/hotfix`
-* create a FluxHelmRelease named `podinfo-hotfix`
+* create a HelmRelease named `podinfo-hotfix`
 * set the automation filter to `glob:hotfix-*`
 * make the CI tooling publish images from my hotfix branch to `stefanprodan/podinfo:hotfix-sha`
 
