@@ -345,6 +345,7 @@ metadata:
   namespace: adm
 spec:
   releaseName: sealed-secrets
+  chart:
     git: git@github.com:stefanprodan/gitops-helm
     path: charts/sealed-secrets
     ref: master
