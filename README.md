@@ -335,7 +335,8 @@ In order to store secrets safely in a public Git repo you can use the Bitnami [S
 and encrypt your Kubernetes Secrets into SealedSecrets. 
 The SealedSecret can be decrypted only by the controller running in your cluster.
 
-This is the sealed-secrets controller release:
+The Sealed Secrets Helm chart is available on [Helm Hub](https://hub.helm.sh/charts/stable/sealed-secrets), 
+so I can use the Helm repository instead of a git repo. This is the sealed-secrets controller release:
 
 ```yaml
 apiVersion: flux.weave.works/v1beta1
@@ -343,14 +344,18 @@ kind: HelmRelease
 metadata:
   name: sealed-secrets
   namespace: adm
+  annotations:
+    flux.weave.works/automated: "false"
 spec:
   releaseName: sealed-secrets
   chart:
-    git: git@github.com:stefanprodan/gitops-helm
-    path: charts/sealed-secrets
-    ref: master
+    repository: https://kubernetes-charts.storage.googleapis.com/
+    name: sealed-secrets
+    version: 1.0.1
   values:
-    image: quay.io/bitnami/sealed-secrets-controller:v0.7.0
+    image:
+      repository: quay.io/bitnami/sealed-secrets-controller
+      tag: v0.7.0
 ```
 
 Note that this release is not automated, since this is a critical component I prefer to update it manually. 
