@@ -79,7 +79,6 @@ Install Weave Flux and its Helm Operator by specifying your fork URL
 helm install --name flux \
 --set rbac.create=true \
 --set helmOperator.create=true \
---set helmOperator.updateChartDeps=false \
 --set git.url=git@github.com:stefanprodan/gitops-helm \
 --namespace flux \
 weaveworks/flux
