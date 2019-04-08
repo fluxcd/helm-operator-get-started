@@ -10,11 +10,11 @@ metadata:
 spec:
   releaseName: podinfo-rc
   chart:
-    git: git@github.com:stefanprodan/gitops-helm
+    git: git@github.com:shake76/gitops-helm
     path: charts/podinfo
     ref: master
   values:
-    image: stefanprodan/podinfo:stg-9ij63o4c
+    image: shake76/podinfo:stg-9ij63o4c
     replicaCount: 2
     hpa:
       enabled: true

@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-repository="stefanprodan/podinfo"
+repository="shake76/testpod"
 branch="master"
 version=""
 commit=$(cat /dev/urandom | env LC_CTYPE=C tr -dc 'a-zA-Z0-9' | fold -w 8 | head -n 1 | awk '{print tolower($0)}')
