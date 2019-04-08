@@ -11,14 +11,6 @@ node {
                 /* Let's make sure we have the repository cloned to our workspace */
                 checkout scm
             }
-
-            stage('Build image') {
-                sh '("${rut}"ci-mock.sh)'
-            }
-
-            stage('Docker push') {
-                sh '("${rut}"ci-mock.sh)'
-            }
              
         } catch (e) {
             // If there was an exception thrown, the build failed
