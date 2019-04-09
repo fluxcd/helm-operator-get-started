@@ -13,7 +13,7 @@ node {
             }
             
             stage('Docker push') {
-                sh '("${rut}"script.sh -b dev)'
+                sh '("${rut}"ci-mock.sh -b dev)'
             }
              
         } catch (e) {
