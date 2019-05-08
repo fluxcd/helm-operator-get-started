@@ -10,9 +10,9 @@ metadata:
 spec:
   releaseName: podinfo-prod
   chart:
-    git: git@github.com:stefanprodan/gitops-helm
+    git: git@github.com:rkamisetti792/gitops-helm.git
     path: charts/podinfo
     ref: master
   values:
-    image: stefanprodan/podinfo:0.4.11
+    image: 1471992/podinfo:dev-m0643ody
     replicaCount: 3
