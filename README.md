@@ -1,7 +1,5 @@
 # Managing Helm releases the GitOps way
 
-[![Build Status](https://travis-ci.org/stefanprodan/gitops-helm.svg?branch=master)](https://travis-ci.org/stefanprodan/gitops-helm)
-
 **What is GitOps?**
 
 GitOps is a way to do Continuous Delivery, it works by using Git as a source of truth for declarative infrastructure and workloads. 
@@ -28,7 +26,7 @@ In order to apply the GitOps pipeline model to Kubernetes you need three things:
 
 I will be using GitHub to host the config repo, Docker Hub as the container registry and Flux as the GitOps Kubernetes Operator.
 
-![gitops](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-gitops.png)
+![gitops](https://github.com/fluxcd/helm-operator-get-started/blob/master/diagrams/flux-helm-operator-registry.png)
 
 ### Install Helm and Tiller
 
@@ -415,7 +413,7 @@ git commit -a -m "Add basic auth credentials to dev namespace" && git push
 Flux will apply the sealed secret on your cluster and sealed-secrets controller will then decrypt it into a 
 Kubernetes secret. 
 
-![SealedSecrets](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-secrets.png)
+![SealedSecrets](https://github.com/fluxcd/helm-operator-get-started/blob/master/diagrams/flux-helm-operator-sealed-secrets.png)
 
 To prepare for disaster recovery you should backup the sealed-secrets controller private key with:
 
