@@ -26,7 +26,7 @@ In order to apply the GitOps pipeline model to Kubernetes you need three things:
     * watches the registry for new image releases and based on deployment policies updates the workload definitions with the new image tag and commits the changes to the config repository 
     * watches for changes in the config repository and applies them to your cluster
 
-I will be using GitHub to host the config repo, Docker Hub as the container registry and Weave Flux OSS as the GitOps Kubernetes Operator.
+I will be using GitHub to host the config repo, Docker Hub as the container registry and Flux as the GitOps Kubernetes Operator.
 
 ![gitops](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-gitops.png)
 
@@ -58,33 +58,33 @@ Deploy Tiller in kube-system namespace:
 helm init --skip-refresh --upgrade --service-account tiller
 ```
 
-### Install Weave Flux
+### Install Flux
 
-The first step in automating Helm releases with [Weave Flux](https://github.com/weaveworks/flux) is to create a Git repository with your charts source code.
-You can fork the [gitops-helm](https://github.com/stefanprodan/gitops-helm) project and use it as a template for your cluster config.
+The first step in automating Helm releases with [Flux](https://github.com/weaveworks/flux) is to create a Git repository with your charts source code.
+You can fork this repository and use it as a template for your cluster config.
 
 *If you fork, update the release definitions with your Docker Hub repository and GitHub username located in 
 \releases\(dev/stg/prod)\podinfo.yaml in your master branch before proceeding.
 
-Add the Weave Flux chart repo:
+Add the Flux chart repo:
 
 ```bash
-helm repo add weaveworks https://weaveworks.github.io/flux
+helm repo add fluxcd https://weaveworks.github.io/flux
 ```
 
-Install Weave Flux and its Helm Operator by specifying your fork URL 
-(replace `stefanprodan` with your GitHub username): 
+Install Flux and its Helm Operator by specifying your fork URL 
+(replace `fluxcd` with your GitHub username): 
 
 ```bash
 helm install --name flux \
 --set rbac.create=true \
 --set helmOperator.create=true \
---set git.url=git@github.com:stefanprodan/gitops-helm \
+--set git.url=git@github.com:fluxcd/gitops-helm \
 --namespace flux \
-weaveworks/flux
+fluxcd/flux
 ```
 
-The Flux Helm operator provides an extension to Weave Flux that automates Helm Chart releases for it. 
+The Flux Helm operator provides an extension to Flux that automates Helm Chart releases for it. 
 A Chart release is described through a Kubernetes custom resource named HelmRelease.
 The Flux daemon synchronizes these resources from git to the cluster, 
 and the Flux Helm operator makes sure Helm charts are released as specified in the resources.
@@ -494,15 +494,6 @@ To avoid this you have to manually delete the Flux Helm Operator with `kubectl -
 **I have a dedicated Kubernetes cluster per environment and I want to use the same Git repo for all. How can I do that?**
 
 For each cluster create a Git branch in your config repo. When installing Flux set the Git branch using `--set git.branch=cluster-name`.
-
-**How can I monitor the CD pipeline and the workloads managed by Flux?**
-
-[Weave Cloud](https://www.weave.works/product/cloud/) is a SaaS product by Weaveworks that extends Flux with:
-
-* a UI for all Flux operations, audit trail and alerts for deployments
-* a realtime map of your cluster to debug and analyse its state
-* full observability and insights into your cluster (hosted Prometheus with 13 months of metrics history)
-* instant Flux operations via GitHub webhooks routing
 
 ### Getting Help
 
