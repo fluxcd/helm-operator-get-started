@@ -67,7 +67,7 @@ You can fork this repository and use it as a template for your cluster config.
 Add the Flux chart repo:
 
 ```bash
-helm repo add fluxcd https://weaveworks.github.io/flux
+helm repo add fluxcd https://fluxcd.github.io/flux
 ```
 
 Install Flux and its Helm Operator by specifying your fork URL 
