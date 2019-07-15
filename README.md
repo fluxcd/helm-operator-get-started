@@ -64,6 +64,12 @@ You can fork this repository and use it as a template for your cluster config.
 *If you fork, update the release definitions with your Docker Hub repository and GitHub username located in 
 \releases\(dev/stg/prod)\podinfo.yaml in your master branch before proceeding.
 
+Apply the Helm Release CRD:
+
+```bash
+kubectl apply -f https://raw.githubusercontent.com/fluxcd/flux/master/deploy-helm/flux-helm-release-crd.yaml
+```
+
 Add the Flux chart repo:
 
 ```bash
