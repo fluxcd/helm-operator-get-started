@@ -73,7 +73,7 @@ kubectl apply -f https://raw.githubusercontent.com/fluxcd/flux/master/deploy-hel
 Add the Flux chart repo:
 
 ```bash
-helm repo add fluxcd https://fluxcd.github.io/flux
+helm repo add fluxcd https://charts.fluxcd.io
 ```
 
 Install Flux and its Helm Operator by specifying your fork URL 
@@ -83,7 +83,7 @@ Install Flux and its Helm Operator by specifying your fork URL
 helm install --name flux \
 --set rbac.create=true \
 --set helmOperator.create=true \
---set git.url=git@github.com:fluxcd/gitops-helm \
+--set git.url=git@github.com:fluxcd/helm-operator-get-started \
 --namespace flux \
 fluxcd/flux
 ```
@@ -132,7 +132,7 @@ The config repo has the following structure:
         └── podinfo.yaml
 ```
 
-I will be using [podinfo](https://github.com/stefanprodan/k8s-podinfo) to demonstrate a full CI/CD pipeline including promoting releases between environments.  
+I will be using [podinfo](https://github.com/stefanprodan/podinfo) to demonstrate a full CI/CD pipeline including promoting releases between environments.  
 
 I'm assuming the following Git branching model:
 * dev branch (feature-ready state)
@@ -185,7 +185,7 @@ metadata:
 spec:
   releaseName: podinfo-dev
   chart:
-    git: git@github.com:stefanprodan/gitops-helm
+    git: git@github.com:fluxcd/helm-operator-get-started
     path: charts/podinfo
     ref: master
   values:
@@ -261,7 +261,7 @@ metadata:
 spec:
   releaseName: podinfo-rc
   chart:
-    git: git@github.com:stefanprodan/gitops-helm
+    git: git@github.com:fluxcd/helm-operator-get-started
     path: charts/podinfo
     ref: master
   values:
@@ -314,7 +314,7 @@ metadata:
 spec:
   releaseName: podinfo-prod
   chart:
-    git: git@github.com:stefanprodan/gitops-helm
+    git: git@github.com:fluxcd/helm-operator-get-started
     path: charts/podinfo
     ref: master
   values:
@@ -489,11 +489,6 @@ kubectl -n dev delete hr/podinfo-dev
 ```
 
 The Flux Helm operator will receive the delete event and will purge the Helm release.
-
-**I've uninstalled Flux and all my Helm releases are gone. Why is that?**
-
-On `HelmRelease` CRD deletion, Kubernetes will remove all `HelmRelease` CRs triggering a Helm purge for each release created by Flux.
-To avoid this you have to manually delete the Flux Helm Operator with `kubectl -n flux delete deployment/flux-helm-operator` before running `helm delete flux --purge`.
 
 **I have a dedicated Kubernetes cluster per environment and I want to use the same Git repo for all. How can I do that?**
 
