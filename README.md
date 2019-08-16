@@ -67,7 +67,7 @@ You can fork this repository and use it as a template for your cluster config.
 Apply the Helm Release CRD:
 
 ```bash
-kubectl apply -f https://raw.githubusercontent.com/fluxcd/flux/master/deploy-helm/flux-helm-release-crd.yaml
+kubectl apply -f https://raw.githubusercontent.com/fluxcd/flux/helm-0.10.1/deploy-helm/flux-helm-release-crd.yaml
 ```
 
 Add the Flux chart repo:
