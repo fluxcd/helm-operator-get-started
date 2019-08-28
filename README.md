@@ -354,11 +354,11 @@ spec:
   chart:
     repository: https://kubernetes-charts.storage.googleapis.com/
     name: sealed-secrets
-    version: 1.0.1
+    version: 1.4.0
   values:
     image:
       repository: quay.io/bitnami/sealed-secrets-controller
-      tag: v0.7.0
+      tag: v0.8.1
 ```
 
 Note that this release is not automated, since this is a critical component I prefer to update it manually.
@@ -366,7 +366,7 @@ Note that this release is not automated, since this is a critical component I pr
 Install the kubeseal CLI:
 
 ```bash
-wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.7.0/kubeseal-darwin-amd64
+wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.8.1/kubeseal-darwin-amd64
 sudo install -m 755 kubeseal-darwin-amd64 /usr/local/bin/kubeseal
 ```
 
