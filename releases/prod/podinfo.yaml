@@ -14,5 +14,5 @@ spec:
     path: charts/podinfo
     ref: master
   values:
-    image: stefanprodan/podinfo:0.4.11
+    image: seanag/flux-test:0.4.11
     replicaCount: 3
