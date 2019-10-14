@@ -479,17 +479,6 @@ spec:
 
 When installing Flux, you can supply the CA and client-side certificate using the `helmOperator.tls` options, more details [here](https://github.com/fluxcd/flux/blob/master/chart/flux/README.md#installing-weave-flux-helm-operator-and-helm-with-tls-enabled).
 
-**I've deleted a `HelmRelease` file from Git. Why is the Helm release still running on my cluster?**
-
-Flux doesn't delete resources, there is an [issue](https://github.com/fluxcd/flux/issues/738) opened about this topic on GitHub.
-In order to delete a Helm release first remove the file from Git and afterwards run:
-
-```yaml
-kubectl -n dev delete hr/podinfo-dev
-```
-
-The Flux Helm operator will receive the delete event and will purge the Helm release.
-
 **I have a dedicated Kubernetes cluster per environment and I want to use the same Git repo for all. How can I do that?**
 
 For each cluster create a Git branch in your config repo. When installing Flux set the Git branch using `--set git.branch=cluster-name`.
