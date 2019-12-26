@@ -1,16 +1,16 @@
 ---
-apiVersion: flux.weave.works/v1beta1
+apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: podinfo-rc
   namespace: stg
   annotations:
-    flux.weave.works/automated: "true"
-    flux.weave.works/tag.chart-image: glob:stg-*
+    fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: glob:stg-*
 spec:
   releaseName: podinfo-rc
   chart:
-    git: git@github.com:stefanprodan/gitops-helm
+    git: git@github.com:fluxcd/helm-operator-get-started
     path: charts/podinfo
     ref: master
   values:
