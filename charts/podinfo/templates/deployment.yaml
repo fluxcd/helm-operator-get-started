@@ -1,4 +1,4 @@
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Release.Name }}
@@ -27,13 +27,7 @@ spec:
           imagePullPolicy: {{ .Values.imagePullPolicy }}
           command:
             - ./podinfo
-            - -port={{ .Values.service.containerPort }}
-            {{- if .Values.logLevel }}
-            - -debug=true
-            {{- end }}
-          env:
-          - name: backend_url
-            value: {{ .Values.backend }}
+            - --port={{ .Values.service.containerPort }}
           ports:
             - name: http
               containerPort: {{ .Values.service.containerPort }}
