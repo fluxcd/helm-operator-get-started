@@ -342,23 +342,17 @@ The Sealed Secrets Helm chart is available on [Helm Hub](https://hub.helm.sh/cha
 so I can use the Helm repository instead of a git repo. This is the sealed-secrets controller release:
 
 ```yaml
-apiVersion: flux.weave.works/v1beta1
+apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: sealed-secrets
   namespace: adm
-  annotations:
-    flux.weave.works/automated: "false"
 spec:
   releaseName: sealed-secrets
   chart:
     repository: https://kubernetes-charts.storage.googleapis.com/
     name: sealed-secrets
-    version: 1.4.0
-  values:
-    image:
-      repository: quay.io/bitnami/sealed-secrets-controller
-      tag: v0.8.1
+    version: 1.6.1
 ```
 
 Note that this release is not automated, since this is a critical component I prefer to update it manually.
@@ -366,8 +360,7 @@ Note that this release is not automated, since this is a critical component I pr
 Install the kubeseal CLI:
 
 ```bash
-wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.8.1/kubeseal-darwin-amd64
-sudo install -m 755 kubeseal-darwin-amd64 /usr/local/bin/kubeseal
+brew install kubeseal
 ```
 
 At startup, the sealed-secrets controller generates a RSA key and logs the public key.
