@@ -28,64 +28,73 @@ I will be using GitHub to host the config repo, Docker Hub as the container regi
 
 ![gitops](https://github.com/fluxcd/helm-operator-get-started/blob/master/diagrams/flux-helm-operator-registry.png)
 
-### Install Helm and Tiller
+### Prerequisites
 
-If you don't have Helm CLI installed, on macOS you can use `brew install kubernetes-helm`.
+You'll need a Kubernetes cluster v1.11 or newer, a GitHub account, git and kubectl installed locally.
 
-Create a service account and a cluster role binding for Tiller:
+Install Helm v3 and fluxctl for macOS with Homebrew:
 
-```bash
-kubectl -n kube-system create sa tiller
-
-kubectl create clusterrolebinding tiller-cluster-rule \
-    --clusterrole=cluster-admin \
-    --serviceaccount=kube-system:tiller
+```sh
+brew install helm fluxctl
 ```
 
-Note that on GKE you need to create an admin cluster user for yourself:
+On Windows you can use Chocolatey:
 
-```bash
-kubectl create clusterrolebinding "cluster-admin-$(whoami)" \
-    --clusterrole=cluster-admin \
-    --user="$(gcloud config get-value core/account)"
+```sh
+choco install kubernetes-helm fluxctl
 ```
 
-Deploy Tiller in kube-system namespace:
-
-```bash
-helm init --skip-refresh --upgrade --service-account tiller
-```
+On Linux you can download the [helm](https://github.com/helm/helm/releases)
+and [fluxctl](https://github.com/fluxcd/flux/releases) binaries from GitHub.
 
 ### Install Flux
 
 The first step in automating Helm releases with [Flux](https://github.com/fluxcd/flux) is to create a Git repository with your charts source code.
-You can fork this repository and use it as a template for your cluster config.
+
+On GitHub, fork this repository and clone it locally
+(replace `fluxcd` with your GitHub username): 
+
+```sh
+git clone https://github.com/fluxcd/helm-operator-get-started
+cd helm-operator-get-started
+```
 
 *If you fork, update the release definitions with your Docker Hub repository and GitHub username located in
 \releases\(dev/stg/prod)\podinfo.yaml in your master branch before proceeding.
 
-Apply the Helm Release CRD:
-
-```bash
-kubectl apply -f https://raw.githubusercontent.com/fluxcd/flux/helm-0.10.1/deploy-helm/flux-helm-release-crd.yaml
-```
-
-Add the Flux chart repo:
+Add FluxCD repository to Helm repos:
 
 ```bash
 helm repo add fluxcd https://charts.fluxcd.io
 ```
 
-Install Flux and its Helm Operator by specifying your fork URL
-(replace `fluxcd` with your GitHub username):
+Create the `fluxcd` namespace:
+
+```sh
+kubectl create ns fluxcd
+```
+
+Install Flux by specifying your fork URL (replace `fluxcd` with your GitHub username): 
 
 ```bash
-helm install --name flux \
---set rbac.create=true \
---set helmOperator.create=true \
---set git.url=git@github.com:fluxcd/helm-operator-get-started \
---namespace flux \
-fluxcd/flux
+helm upgrade -i flux fluxcd/flux --wait \
+--namespace fluxcd \
+--set git.url=git@github.com:fluxcd/helm-operator-get-started
+```
+
+Install the `HelmRelease` Kubernetes custom resource definition:
+
+```sh
+kubectl apply -f https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/flux-helm-release-crd.yaml
+```
+
+Install Flux Helm Operator with ***Helm v3*** support:
+
+```bash
+helm upgrade -i helm-operator fluxcd/helm-operator --wait \
+--namespace fluxcd \
+--set git.ssh.secretName=flux-git-deploy \
+--set helm.versions=v3
 ```
 
 The Flux Helm operator provides an extension to Flux that automates Helm Chart releases for it.
@@ -93,13 +102,12 @@ A Chart release is described through a Kubernetes custom resource named HelmRele
 The Flux daemon synchronizes these resources from git to the cluster,
 and the Flux Helm operator makes sure Helm charts are released as specified in the resources.
 
-Note that Flux Helm Operator works with Kubernetes 1.9 or newer.
+Note that Flux Helm Operator works with Kubernetes 1.11 or newer.
 
-At startup Flux generates a SSH key and logs the public key.
-Find the SSH public key with:
+At startup, Flux generates a SSH key and logs the public key. Find the public key with:
 
 ```bash
-kubectl -n flux logs deployment/flux | grep identity.pub | cut -d '"' -f2
+fluxctl identity --k8s-fwd-ns fluxcd
 ```
 
 In order to sync your cluster state with Git you need to copy the public key and
@@ -174,14 +182,14 @@ Using this chart I want to create a release in the `dev` namespace with the imag
 Instead of editing the `values.yaml` from the chart source, I create a `HelmRelease` definition (located in /releases/dev/podinfo.yaml):
 
 ```yaml
-apiVersion: flux.weave.works/v1beta1
+apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: podinfo-dev
   namespace: dev
   annotations:
-    flux.weave.works/automated: "true"
-    flux.weave.works/tag.chart-image: glob:dev-*
+    fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: glob:dev-*
 spec:
   releaseName: podinfo-dev
   chart:
@@ -203,7 +211,7 @@ Flux Helm release fields:
 
 The options specified in the HelmRelease `spec.values` will override the ones in `values.yaml` from the chart source.
 
-With the `flux.weave.works` annotations I instruct Flux to automate this release.
+With the `fluxcd.io/automated` annotations I instruct Flux to automate this release.
 When a new tag with the prefix `dev` is pushed to Docker Hub, Flux will update the image field in the yaml file,
 will commit and push the change to Git and finally will apply the change on the cluster.
 
@@ -213,11 +221,11 @@ When the `podinfo-dev` HelmRelease object changes inside the cluster,
 Kubernetes API will notify the Flux Helm Operator and the operator will perform a Helm release upgrade.
 
 ```
-$ helm history podinfo-dev
+$ helm -n dev history podinfo-dev
 
-REVISION	UPDATED                 	STATUS    	CHART        	DESCRIPTION
-1       	Fri Jul 20 16:51:52 2018	SUPERSEDED	podinfo-0.2.0	Install complete
-2       	Fri Jul 20 22:18:46 2018	DEPLOYED  	podinfo-0.2.0	Upgrade complete
+REVISION	STATUS    	CHART        	DESCRIPTION
+1       	superseded	podinfo-0.2.0	Install complete
+2       	deployed  	podinfo-0.2.0	Upgrade complete
 ```
 
 The Flux Helm Operator reacts to changes in the HelmRelease collection but will also detect changes in the charts source files.
@@ -226,12 +234,12 @@ If I make a change to the podinfo chart, the operator will pick that up and run 
 ![gitops-chart-change](https://github.com/stefanprodan/openfaas-flux/blob/master/docs/screens/flux-helm-chart-update.png)
 
 ```
-$ helm history podinfo-dev
+$ helm -n dev history podinfo-dev
 
-REVISION	UPDATED                 	STATUS    	CHART        	DESCRIPTION
-1       	Fri Jul 20 16:51:52 2018	SUPERSEDED	podinfo-0.2.0	Install complete
-2       	Fri Jul 20 22:18:46 2018	SUPERSEDED	podinfo-0.2.0	Upgrade complete
-3       	Fri Jul 20 22:39:39 2018	DEPLOYED  	podinfo-0.2.1	Upgrade complete
+REVISION	STATUS    	CHART        	DESCRIPTION
+1       	superseded	podinfo-0.2.0	Install complete
+2       	superseded	podinfo-0.2.0	Upgrade complete
+3       	deployed  	podinfo-0.2.1	Upgrade complete
 ```
 
 Now let's assume that I want to promote the code from the `dev` branch into a more stable environment for others to test it.
@@ -250,14 +258,14 @@ Assuming the staging environment has some sort of automated load testing in plac
 I want to have a different configuration than dev:
 
 ```yaml
-apiVersion: flux.weave.works/v1beta1
+apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: podinfo-rc
   namespace: stg
   annotations:
-    flux.weave.works/automated: "true"
-    flux.weave.works/tag.chart-image: glob:stg-*
+    fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: glob:stg-*
 spec:
   releaseName: podinfo-rc
   chart:
@@ -303,14 +311,14 @@ Successfully tagged stefanprodan/podinfo:0.4.10
 If I want to automate the production deployment based on version tags, I would use `semver` filters instead of `glob`:
 
 ```yaml
-apiVersion: flux.weave.works/v1beta1
+apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: podinfo-prod
   namespace: prod
   annotations:
-    flux.weave.works/automated: "true"
-    flux.weave.works/tag.chart-image: semver:~0.4
+    fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: semver:~0.4
 spec:
   releaseName: podinfo-prod
   chart:
@@ -342,23 +350,17 @@ The Sealed Secrets Helm chart is available on [Helm Hub](https://hub.helm.sh/cha
 so I can use the Helm repository instead of a git repo. This is the sealed-secrets controller release:
 
 ```yaml
-apiVersion: flux.weave.works/v1beta1
+apiVersion: helm.fluxcd.io/v1
 kind: HelmRelease
 metadata:
   name: sealed-secrets
   namespace: adm
-  annotations:
-    flux.weave.works/automated: "false"
 spec:
   releaseName: sealed-secrets
   chart:
     repository: https://kubernetes-charts.storage.googleapis.com/
     name: sealed-secrets
-    version: 1.4.0
-  values:
-    image:
-      repository: quay.io/bitnami/sealed-secrets-controller
-      tag: v0.8.1
+    version: 1.6.1
 ```
 
 Note that this release is not automated, since this is a critical component I prefer to update it manually.
@@ -366,8 +368,7 @@ Note that this release is not automated, since this is a critical component I pr
 Install the kubeseal CLI:
 
 ```bash
-wget https://github.com/bitnami-labs/sealed-secrets/releases/download/v0.8.1/kubeseal-darwin-amd64
-sudo install -m 755 kubeseal-darwin-amd64 /usr/local/bin/kubeseal
+brew install kubeseal
 ```
 
 At startup, the sealed-secrets controller generates a RSA key and logs the public key.
@@ -434,60 +435,12 @@ kubectl replace secret -n adm sealed-secrets-key -f sealed-secrets-key.yaml
 kubectl delete pod -n adm -l app=sealed-secrets
 ```
 
-### Flux Helm Integration FAQ
-
-**My Helm charts have more than one container image. How can I automate the image tag update for all my containers?**
-
-A container image list can have the following format:
-
-```yaml
-container_name_1:
-  image: repo/app1:tag
-container_name_2:
-  image: quay.io/repo/app2:tag
-```
-
-Here is an example with different deployment automation policies:
-
-```yaml
-apiVersion: flux.weave.works/v1beta1
-kind: HelmRelease
-metadata:
-  name: openfaas
-  namespace: openfaas
-  annotations:
-    flux.weave.works/automated: "true"
-    flux.weave.works/tag.prometheus: semver:~2.3
-    flux.weave.works/tag.alertmanager: glob:v0.15.*
-    flux.weave.works/tag.nats: regexp:^0.6.*
-spec:
-  releaseName: openfaas
-  chart:
-    repository: https://openfaas.github.io/faas-netes/
-    name: openfaas
-    version: 1.3.3
-  values:
-    prometheus:
-      image: prom/prometheus:v2.3.1
-    alertmanager:
-      image: prom/alertmanager:v0.15.0
-    nats:
-      image: nats-streaming:0.6.0
-```
-
-**I'm using SSL between Helm and Tiller. How can I configure Flux to use the certificate?**
-
-When installing Flux, you can supply the CA and client-side certificate using the `helmOperator.tls` options, more details [here](https://github.com/fluxcd/flux/blob/master/chart/flux/README.md#installing-weave-flux-helm-operator-and-helm-with-tls-enabled).
-
-**I have a dedicated Kubernetes cluster per environment and I want to use the same Git repo for all. How can I do that?**
-
-For each cluster create a Git branch in your config repo. When installing Flux set the Git branch using `--set git.branch=cluster-name`.
-
 ### <a name="help"></a>Getting Help
 
 If you have any questions about Helm Operator and continuous delivery:
 
-- Read [the Helm Operator docs](https://github.com/fluxcd/flux/tree/master/docs).
+- Read [the Helm Operator docs](https://docs.fluxcd.io/projects/helm-operator/en/latest/).
+- Read [the Flux integration with the Helm operator docs](https://docs.fluxcd.io/en/latest/references/helm-operator-integration.html).
 - Invite yourself to the <a href="https://slack.cncf.io" target="_blank">CNCF community</a>
   slack and ask a question on the [#flux](https://cloud-native.slack.com/messages/flux/)
   channel.

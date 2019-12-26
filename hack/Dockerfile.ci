@@ -1,19 +1,19 @@
-FROM golang:1.10 as builder
+FROM golang:1.13 as builder
 
 ARG VERSION=unknown
 ARG GITCOMMIT=unknown
 
-RUN mkdir -p /go/src/github.com/stefanprodan/k8s-podinfo/
+RUN mkdir -p /go/src/github.com/stefanprodan/podinfo/
 
-WORKDIR /go/src/github.com/stefanprodan/k8s-podinfo
+WORKDIR /go/src/github.com/stefanprodan/podinfo
 
-ADD https://github.com/stefanprodan/k8s-podinfo/archive/v0.4.0.tar.gz .
+ADD https://github.com/stefanprodan/podinfo/archive/3.1.5.tar.gz .
 
-RUN tar xzf v0.4.0.tar.gz --strip 1
+RUN tar xzf 3.1.5.tar.gz --strip 1
 
 RUN CGO_ENABLED=0 GOOS=linux go build -ldflags "-s -w \
-  -X github.com/stefanprodan/k8s-podinfo/pkg/version.GITCOMMIT=${GITCOMMIT} \
-  -X github.com/stefanprodan/k8s-podinfo/pkg/version.VERSION=${VERSION}" \
+  -X github.com/stefanprodan/podinfo/pkg/version.GITCOMMIT=${GITCOMMIT} \
+  -X github.com/stefanprodan/podinfo/pkg/version.VERSION=${VERSION}" \
   -a -installsuffix cgo -o podinfo ./cmd/podinfo
 
 FROM alpine:3.7
@@ -23,7 +23,7 @@ RUN addgroup -S app \
 
 WORKDIR /home/app
 
-COPY --from=builder /go/src/github.com/stefanprodan/k8s-podinfo/podinfo .
+COPY --from=builder /go/src/github.com/stefanprodan/podinfo/podinfo .
 
 RUN chown -R app:app ./
 
