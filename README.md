@@ -30,7 +30,7 @@ I will be using GitHub to host the config repo, Docker Hub as the container regi
 
 ### Prerequisites
 
-You'll need a Kubernetes cluster v1.11 or newer with load balancer support, a GitHub account, git and kubectl installed locally.
+You'll need a Kubernetes cluster v1.11 or newer, a GitHub account, git and kubectl installed locally.
 
 Install Helm v3 and fluxctl for macOS with Homebrew:
 
@@ -43,6 +43,9 @@ On Windows you can use Chocolatey:
 ```sh
 choco install kubernetes-helm fluxctl
 ```
+
+On Linux you can download the [helm](https://github.com/helm/helm/releases)
+and [fluxctl](https://github.com/fluxcd/flux/releases) binaries from GitHub.
 
 ### Install Flux
 
@@ -436,7 +439,8 @@ kubectl delete pod -n adm -l app=sealed-secrets
 
 If you have any questions about Helm Operator and continuous delivery:
 
-- Read [the Helm Operator docs](https://github.com/fluxcd/flux/tree/master/docs).
+- Read [the Helm Operator docs](https://docs.fluxcd.io/projects/helm-operator/en/latest/).
+- Read [the Flux integration with the Helm operator docs](https://docs.fluxcd.io/en/latest/references/helm-operator-integration.html).
 - Invite yourself to the <a href="https://slack.cncf.io" target="_blank">CNCF community</a>
   slack and ask a question on the [#flux](https://cloud-native.slack.com/messages/flux/)
   channel.
