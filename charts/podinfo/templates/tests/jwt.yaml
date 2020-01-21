@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Pod
 metadata:
-  name: {{ template "podinfo.fullname" . }}-service-test-{{ randAlphaNum 5 | lower }}
+  name: {{ template "podinfo.fullname" . }}-jwt-test-{{ randAlphaNum 5 | lower }}
   labels:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
@@ -14,14 +14,16 @@ metadata:
     appmesh.k8s.aws/sidecarInjectorWebhook: disabled
 spec:
   containers:
-    - name: curl
+    - name: tools
       image: giantswarm/tiny-tools
       command:
         - sh
         - -c
         - |
-          curl -s ${PODINFO_SVC}/api/info | grep version
+          TOKEN=$(curl -sd 'test' ${PODINFO_SVC}/token | jq -r .token) &&
+          curl -sH "Authorization: Bearer ${TOKEN}" ${PODINFO_SVC}/token/validate | grep test
       env:
-        - name: PODINFO_SVC
-          value: {{ template "podinfo.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.externalPort }}
+      - name: PODINFO_SVC
+        value: {{ template "podinfo.fullname" . }}.{{ .Release.Namespace }}:{{ .Values.service.externalPort }}
   restartPolicy: Never
+
