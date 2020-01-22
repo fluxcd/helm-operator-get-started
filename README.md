@@ -197,7 +197,9 @@ spec:
     path: charts/podinfo
     ref: master
   values:
-    image: stefanprodan/podinfo:dev-kb9lm91e
+    image:
+      repository: stefanprodan/podinfo
+      tag: dev-kb9lm91e
     replicaCount: 1
 ```
 
@@ -273,7 +275,9 @@ spec:
     path: charts/podinfo
     ref: master
   values:
-    image: stefanprodan/podinfo:stg-9ij63o4c
+    image:
+      repository: stefanprodan/podinfo
+      tag: stg-9ij63o4c
     replicaCount: 2
     hpa:
       enabled: true
@@ -326,7 +330,9 @@ spec:
     path: charts/podinfo
     ref: master
   values:
-    image: stefanprodan/podinfo:0.4.10
+    image:
+      repository: stefanprodan/podinfo
+      tag: 0.4.10
     replicaCount: 3
 ```
 

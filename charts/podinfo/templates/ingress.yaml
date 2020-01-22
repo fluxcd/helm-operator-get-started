@@ -1,6 +1,5 @@
 {{- if .Values.ingress.enabled -}}
 {{- $fullName := include "podinfo.fullname" . -}}
-{{- $servicePort := .Values.service.port -}}
 {{- $ingressPath := .Values.ingress.path -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -30,6 +29,14 @@ spec:
   {{- range .Values.ingress.hosts }}
     - host: {{ . }}
       http:
+        paths:
+          - path: {{ $ingressPath }}
+            backend:
+              serviceName: {{ $fullName }}
+              servicePort: http
+  {{- end }}
+  {{- if not .Values.ingress.hosts }}
+    - http:
         paths:
           - path: {{ $ingressPath }}
             backend:
