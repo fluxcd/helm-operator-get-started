@@ -14,7 +14,9 @@ spec:
     path: charts/podinfo
     ref: master
   values:
-    image: stefanprodan/podinfo:stg-9ij63o4c
+    image:
+      repository: stefanprodan/podinfo
+      tag: stg-9ij63o4c
     replicaCount: 2
     hpa:
       enabled: true
