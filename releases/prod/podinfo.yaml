@@ -14,5 +14,5 @@ spec:
     path: charts/podinfo
     ref: master
   values:
-    image: richellin7/podinfo:0.1.0
+    image: richellin7/podinfo:0.1.1
     replicaCount: 3
