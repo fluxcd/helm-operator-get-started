@@ -6,7 +6,7 @@ metadata:
   namespace: prod
   annotations:
     fluxcd.io/automated: "true"
-    filter.fluxcd.io/chart-image: semver:~0.4
+    filter.fluxcd.io/chart-image: semver:~0.1
 spec:
   releaseName: podinfo-prod
   chart:
@@ -14,5 +14,5 @@ spec:
     path: charts/podinfo
     ref: master
   values:
-    image: richellin7/podinfo:0.4.11
+    image: richellin7/podinfo:0.1.0
     replicaCount: 3
