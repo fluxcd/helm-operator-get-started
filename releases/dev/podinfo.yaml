@@ -14,7 +14,7 @@ spec:
     path: charts/podinfo
     ref: master
   values:
-    image: richellin7/podinfo:dev-hdtwcel9
+    image: richellin7/podinfo:dev-
     replicaCount: 1
     hpa:
       enabled: false
