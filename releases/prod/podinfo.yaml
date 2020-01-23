@@ -5,7 +5,7 @@ metadata:
   name: podinfo-prod
   namespace: prod
   annotations:
-    fluxcd.io/automated: "true"
+    fluxcd.io/automated: "false"
     filter.fluxcd.io/chart-image: semver:~0.1
 spec:
   releaseName: podinfo-prod
