@@ -163,9 +163,9 @@ Let's create an image corresponding to the `dev` branch (replace `stefanprodan` 
 $ cd hack && ./ci-mock.sh -r stefanprodan/podinfo -b dev
 
 Sending build context to Docker daemon  4.096kB
-Step 1/15 : FROM golang:1.10 as builder
+Step 1/15 : FROM golang:1.13 as builder
 ....
-Step 9/15 : FROM alpine:3.7
+Step 9/15 : FROM alpine:3.10
 ....
 Step 12/15 : COPY --from=builder /go/src/github.com/stefanprodan/k8s-podinfo/podinfo .
 ....
