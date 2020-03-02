@@ -85,7 +85,7 @@ helm upgrade -i flux fluxcd/flux --wait \
 Install the `HelmRelease` Kubernetes custom resource definition:
 
 ```sh
-kubectl apply -f https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/flux-helm-release-crd.yaml
+kubectl apply -f https://raw.githubusercontent.com/fluxcd/helm-operator/master/deploy/crds.yaml
 ```
 
 Install Flux Helm Operator with ***Helm v3*** support:
