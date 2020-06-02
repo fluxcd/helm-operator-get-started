@@ -16,7 +16,8 @@ spec:
   values:
     image:
       repository: soufianem370/podinfo
-      tag: dev-hdtwcel9
+      tag: dev-eobmcqmy
     replicaCount: 2
     hpa:
       enabled: false
+    
