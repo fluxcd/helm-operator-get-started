@@ -17,6 +17,6 @@ spec:
     image:
       repository: soufianem370/podinfo
       tag: dev-eobmcqmy
-    replicaCount: 1
+    replicaCount: 2
     hpa:
       enabled: false
