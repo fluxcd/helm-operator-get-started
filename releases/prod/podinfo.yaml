@@ -17,4 +17,4 @@ spec:
     image:
       repository: soufianem370/podinfo
       tag: prod-g7ehaf6e
-    replicaCount: 3
+    replicaCount: 2
