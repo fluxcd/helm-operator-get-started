@@ -15,7 +15,7 @@ spec:
     ref: master
   values:
     image:
-      repository: stefanprodan/podinfo
+      repository: agordon/podinfo
       tag: dev-hdtwcel9
     replicaCount: 1
     hpa:

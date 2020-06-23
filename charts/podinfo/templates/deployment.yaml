@@ -36,27 +36,27 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - ./podinfo
-            - --port={{ .Values.service.httpPort | default 9898 }}
-            {{- if .Values.service.metricsPort }}
-            - --port-metrics={{ .Values.service.metricsPort }}
-            {{- end }}
-            {{- if .Values.service.grpcPort }}
-            - --grpc-port={{ .Values.service.grpcPort }}
-            {{- end }}
-            {{- if .Values.service.grpcService }}
-            - --grpc-service-name={{ .Values.service.grpcService }}
-            {{- end }}
-            {{- range .Values.backends }}
-            - --backend-url={{ . }}
-            {{- end }}
-            - --level={{ .Values.logLevel }}
-            - --random-delay={{ .Values.faults.delay }}
-            - --random-error={{ .Values.faults.error }}
-            {{- if .Values.h2c.enabled }}
-            - --h2c
-            {{- end }}
+          command: ["sleep", "3600"]
+            # - ./podinfo
+            # - --port={{ .Values.service.httpPort | default 9898 }}
+            # {{- if .Values.service.metricsPort }}
+            # - --port-metrics={{ .Values.service.metricsPort }}
+            # {{- end }}
+            # {{- if .Values.service.grpcPort }}
+            # - --grpc-port={{ .Values.service.grpcPort }}
+            # {{- end }}
+            # {{- if .Values.service.grpcService }}
+            # - --grpc-service-name={{ .Values.service.grpcService }}
+            # {{- end }}
+            # {{- range .Values.backends }}
+            # - --backend-url={{ . }}
+            # {{- end }}
+            # - --level={{ .Values.logLevel }}
+            # - --random-delay={{ .Values.faults.delay }}
+            # - --random-error={{ .Values.faults.error }}
+            # {{- if .Values.h2c.enabled }}
+            # - --h2c
+            # {{- end }}
           env:
           {{- if .Values.ui.message }}
           - name: PODINFO_UI_MESSAGE
