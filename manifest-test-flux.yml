@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hola-php
+  name: hola-php
+  namespace: test-flux
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: hola-php
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: hola-php
+    spec:
+      containers:
+      - image: nginx:latest
+        name: gitlab-esp-kube-2trxq
+        imagePullPolicy: "Always"
+        resources: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: hola-php
+  name: hola-php
+  namespace: test-flux
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+    nodePort: 32333
+  selector:
+    app: hola-php
+  type: NodePort
