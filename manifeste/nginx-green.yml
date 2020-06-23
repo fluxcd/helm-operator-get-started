@@ -6,7 +6,7 @@ metadata:
   name: nginx-green
   namespace: obs
 spec:
-  replicas: 1
+  replicas: 2
   selector:
     matchLabels:
       run: nginx-green
