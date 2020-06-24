@@ -38,7 +38,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           # command: ["sleep", "3600"]
           command:
-            - ./podinfo
+            - ./podinfo333
             - --port={{ .Values.service.httpPort | default 9898 }}
             {{- if .Values.service.metricsPort }}
             - --port-metrics={{ .Values.service.metricsPort }}
