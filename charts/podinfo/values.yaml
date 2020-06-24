@@ -24,7 +24,7 @@ image:
 
 service:
   enabled: true
-  type: ClusterIP
+  type: LoadBalancer
   metricsPort: 9797
   httpPort: 9898
   externalPort: 9898
