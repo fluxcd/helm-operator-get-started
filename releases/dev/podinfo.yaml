@@ -12,11 +12,11 @@ spec:
   chart:
     git: git@github.com:A-Gordon/helm-operator-get-started
     path: charts/podinfo
-    ref: master
+    ref: dev
   values:
     image:
       repository: agordon/podinfo
-      tag: dev-7snh6ixr
+      tag: dev-uzkmsj7p
     replicaCount: 1
     hpa:
       enabled: false
