@@ -6,7 +6,7 @@ metadata:
   name: nginx-red
   namespace: obs
 spec:
-  replicas: 3
+  replicas: 2
   selector:
     matchLabels:
       run: nginx-red
