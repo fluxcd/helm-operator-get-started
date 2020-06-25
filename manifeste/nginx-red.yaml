@@ -24,7 +24,7 @@ spec:
         volumeMounts:
         - name: webdata
           mountPath: "/webdata"
-        command: ["/bin/sh", "-c", 'echo "<h1>I am <font color=green>Red</font></h1>" > /webdata/index.html']
+        command: ["/bin/sh", "-c", 'echo "<h1>I am <font color=red>Red</font></h1>" > /webdata/index.html']
       containers:
       - image: nginx
         name: nginx
