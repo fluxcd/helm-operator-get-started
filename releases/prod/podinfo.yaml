@@ -16,5 +16,5 @@ spec:
   values:
     image:
       repository: soufianem370/podinfo
-      tag: 0.4.10
+      tag: 0.4.11
     replicaCount: 3
