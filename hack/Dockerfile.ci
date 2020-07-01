@@ -7,9 +7,9 @@ RUN mkdir -p /podinfo/
 
 WORKDIR /podinfo
 
-ADD https://github.com/stefanprodan/podinfo/archive/3.1.5.tar.gz .
+ADD https://github.com/stefanprodan/podinfo/archive/4.0.6.tar.gz .
 
-RUN tar xzf 3.1.5.tar.gz --strip 1
+RUN tar xzf 4.0.6.tar.gz --strip 1
 
 RUN go mod download
 
