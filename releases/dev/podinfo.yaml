@@ -16,7 +16,7 @@ spec:
   values:
     image:
       repository: hierovision/podinfo
-      tag: dev-hdtwcel9
+      tag: dev-cd7kca7r
     replicaCount: 1
     hpa:
       enabled: false
