@@ -50,23 +50,6 @@ serviceAccount:
   # If not set and create is true, a name is generated using the fullname template
   name:
 
-linkerd:
-  profile:
-    enabled: false
-
-ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /*
-  hosts: []
-#    - podinfo.local
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
 resources:
   limits:
   requests:
@@ -78,4 +61,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-

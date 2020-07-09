@@ -1,0 +1,17 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: podinfo
+  namespace: demo
+spec:
+  releaseName: podinfo
+  chart:
+    git: git@github.com:EugeneAikashev/flux-helm-poc.git
+    path: charts/podinfo
+    ref: master
+  values:
+    image:
+      repository: stefanprodan/podinfo
+      tag: 0.4.11
+    replicaCount: 1
