@@ -95,7 +95,7 @@ spec:
               - check
               - http
               - localhost:{{ .Values.service.httpPort | default 9898 }}/healthz
-            initialDelaySeconds: 1
+            initialDelaySeconds: 2
             timeoutSeconds: 5
           readinessProbe:
             exec:
@@ -104,7 +104,7 @@ spec:
               - check
               - http
               - localhost:{{ .Values.service.httpPort | default 9898 }}/readyz
-            initialDelaySeconds: 1
+            initialDelaySeconds: 2
             timeoutSeconds: 5
           volumeMounts:
           - name: data
