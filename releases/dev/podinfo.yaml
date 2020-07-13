@@ -16,7 +16,7 @@ spec:
   values:
     image:
       repository: yashghia/podinfo
-      tag: dev-olauvrkk
+      tag: dev-ypmtfkjv
     replicaCount: 1
     hpa:
       enabled: false
