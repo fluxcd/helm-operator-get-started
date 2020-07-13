@@ -5,7 +5,7 @@ metadata:
   name: podinfo-dev
   namespace: dev
   annotations:
-    fluxcd.io/automated: "true"
+    fluxcd.io/automated: "false"
     filter.fluxcd.io/chart-image: glob:dev-*
 spec:
   releaseName: podinfo-dev
