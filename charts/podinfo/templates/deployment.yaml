@@ -104,7 +104,7 @@ spec:
               - check
               - http
               - localhost:{{ .Values.service.httpPort | default 9898 }}/readyz
-            initialDelaySeconds: 2
+            initialDelaySeconds: 1
             timeoutSeconds: 5
           volumeMounts:
           - name: data
