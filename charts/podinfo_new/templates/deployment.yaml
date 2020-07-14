@@ -1,0 +1,128 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "podinfo.fullname" . }}
+  labels:
+    app: {{ template "podinfo.name" . }}
+    chart: {{ template "podinfo.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  {{- if not .Values.hpa.enabled }}
+  replicas: {{ .Values.replicaCount }}
+  {{- end }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: {{ template "podinfo.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "podinfo.name" . }}
+        release: {{ .Release.Name }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Values.service.httpPort }}"
+    spec:
+      terminationGracePeriodSeconds: 30
+      {{- if .Values.serviceAccount.enabled }}
+      serviceAccountName: {{ template "podinfo.serviceAccountName" . }}
+      {{- end }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - ./podinfo
+            - --port={{ .Values.service.httpPort | default 9898 }}
+            {{- if .Values.service.metricsPort }}
+            - --port-metrics={{ .Values.service.metricsPort }}
+            {{- end }}
+            {{- if .Values.service.grpcPort }}
+            - --grpc-port={{ .Values.service.grpcPort }}
+            {{- end }}
+            {{- if .Values.service.grpcService }}
+            - --grpc-service-name={{ .Values.service.grpcService }}
+            {{- end }}
+            {{- range .Values.backends }}
+            - --backend-url={{ . }}
+            {{- end }}
+            - --level={{ .Values.logLevel }}
+            - --random-delay={{ .Values.faults.delay }}
+            - --random-error={{ .Values.faults.error }}
+            {{- if .Values.h2c.enabled }}
+            - --h2c
+            {{- end }}
+          env:
+          {{- if .Values.ui.message }}
+          - name: PODINFO_UI_MESSAGE
+            value: {{ .Values.ui.message }}
+          {{- end }}
+          {{- if .Values.ui.logo }}
+          - name: PODINFO_UI_LOGO
+            value: {{ .Values.ui.logo }}
+          {{- end }}
+          {{- if .Values.ui.color }}
+          - name: PODINFO_UI_COLOR
+            value: {{ .Values.ui.color }}
+          {{- end }}
+          {{- if .Values.backend }}
+          - name: PODINFO_BACKEND_URL
+            value: {{ .Values.backend }}
+          {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.httpPort | default 9898 }}
+              protocol: TCP
+            {{- if .Values.service.metricsPort }}
+            - name: http-metrics
+              containerPort: {{ .Values.service.metricsPort }}
+              protocol: TCP
+            {{- end }}
+            {{- if .Values.service.grpcPort }}
+            - name: grpc
+              containerPort: {{ .Values.service.grpcPort }}
+              protocol: TCP
+            {{- end }}
+          livenessProbe:
+            exec:
+              command:
+              - podcli
+              - check
+              - http
+              - localhost:{{ .Values.service.httpPort | default 9898 }}/healthz
+            initialDelaySeconds: 2
+            timeoutSeconds: 5
+          readinessProbe:
+            exec:
+              command:
+              - podcli
+              - check
+              - http
+              - localhost:{{ .Values.service.httpPort | default 9898 }}/readyz
+            initialDelaySeconds: 1
+            timeoutSeconds: 5
+          volumeMounts:
+          - name: data
+            mountPath: /data
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+      volumes:
+      - name: data
+        emptyDir: {}
