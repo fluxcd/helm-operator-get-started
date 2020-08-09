@@ -15,8 +15,8 @@ spec:
     ref: master
   values:
     image:
-      repository: stefanprodan/podinfo
-      tag: dev-hdtwcel9
+      repository: beelzbozo/podinfo
+      tag: dev-cnjr2nr7
     replicaCount: 1
     hpa:
       enabled: false
