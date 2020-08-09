@@ -15,6 +15,6 @@ spec:
     ref: master
   values:
     image:
-      repository: stefanprodan/podinfo
+      repository: beelzbozo/podinfo
       tag: 0.4.11
     replicaCount: 3

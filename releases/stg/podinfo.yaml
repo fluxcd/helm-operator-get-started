@@ -15,7 +15,7 @@ spec:
     ref: master
   values:
     image:
-      repository: stefanprodan/podinfo
+      repository: beelzbozo/podinfo
       tag: stg-9ij63o4c
     replicaCount: 2
     hpa:
