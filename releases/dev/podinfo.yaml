@@ -16,7 +16,7 @@ spec:
   values:
     image:
       repository: akennealy/podinfo
-      tag: dev-hdtwcel9
+      tag: dev-lpz380v6
     replicaCount: 1
     hpa:
       enabled: false
