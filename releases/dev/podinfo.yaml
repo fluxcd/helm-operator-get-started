@@ -16,7 +16,7 @@ spec:
   values:
     image:
       repository: kkakol/podinfo
-      tag: dev-6jgtxglp
+      tag: dev-cgsblhwb
     replicaCount: 1
     hpa:
       enabled: false
