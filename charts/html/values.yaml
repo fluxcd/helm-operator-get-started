@@ -1,8 +1,8 @@
-# Default values for podinfo.
+# Default values for app.
 
 replicaCount: 1
 logLevel: info
-backend: #http://backend-podinfo:9898/echo
+backend: #http://localhost:8080/echo
 backends: []
 
 ui:
@@ -56,7 +56,7 @@ ingress:
     # kubernetes.io/tls-acme: "true"
   path: /*
   hosts: []
-#    - podinfo.local
+#    - app.local
   tls: []
   #  - secretName: chart-example-tls
   #    hosts:
