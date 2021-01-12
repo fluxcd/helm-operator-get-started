@@ -11,19 +11,8 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - port: {{ .Values.service.externalPort }}
-      targetPort: http
-      protocol: TCP
-      name: http
-      {{- if (and (eq .Values.service.type "NodePort") (not (empty .Values.service.nodePort))) }}
-      nodePort: {{ .Values.service.nodePort }}
-      {{- end }}
-    {{- if .Values.service.grpcPort }}
-    - port: {{ .Values.service.grpcPort }}
-      targetPort: grpc
-      protocol: TCP
-      name: grpc
-    {{- end }}
+    - name: http
+      port: {{ .Values.service.httpPort }}
   selector:
     app: {{ template "app.name" . }}
     release: {{ .Release.Name }}
