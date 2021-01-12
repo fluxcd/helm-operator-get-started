@@ -11,8 +11,8 @@ metadata:
 spec:
   type: {{ .Values.service.type }}
   ports:
-    - name: http
-      port: {{ .Values.service.httpPort }}
+  - name: http
+    port: {{ .Values.service.httpPort }}
   selector:
     app: {{ template "app.name" . }}
     release: {{ .Release.Name }}
