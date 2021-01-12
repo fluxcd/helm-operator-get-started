@@ -1,0 +1,24 @@
+---
+apiVersion: helm.fluxcd.io/v1
+kind: HelmRelease
+metadata:
+  name: html
+  namespace: html
+  annotations:
+    fluxcd.io/automated: "true"
+    filter.fluxcd.io/chart-image: glob:master-*
+spec:
+  releaseName: html-test
+  chart:
+    git: git@github.com:kkakolgit/helm-operator-get-started
+    path: charts/html
+    ref: master
+  values:
+    image:
+      repository: kkakol/demoapp
+      tag: master-amyyf8nj
+    replicaCount: 1
+    hpa:
+      enabled: false
+    ingress:
+      enabled: true
