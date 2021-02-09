@@ -1,6 +1,12 @@
 # Managing Helm releases the GitOps way
 
-**What is GitOps?**
+## We are moving to Flux v2
+
+> ⚠️ Please note: In preparation of [Flux v2](https://toolkit.fluxcd.io/) GA this repository with Flux v1 examples has been archived. The Flux v2 equivalent of what is shown here can be found at [flux2-kustomize-helm-example](https://github.com/fluxcd/flux2-kustomize-helm-example).
+>
+> Thanks a lot for your interest.
+
+## What is GitOps?
 
 GitOps is a way to do Continuous Delivery, it works by using Git as a source of truth for declarative infrastructure and workloads.
 For Kubernetes this means using `git push` instead of `kubectl create/apply` or `helm install/upgrade`.
